@@ -2,13 +2,7 @@ package eu.alkismavridis.euljava.parser.token
 
 import eu.alkismavridis.euljava.core.CompileOptions
 import eu.alkismavridis.euljava.core.EulLogger
-import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertBooleanLiteral
-import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertCharLiteral
-import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertEulReference
-import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertKeyword
-import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertNullLiteral
 import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertOperator
-import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertStringLiteral
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
