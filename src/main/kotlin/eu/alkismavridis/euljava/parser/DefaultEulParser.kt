@@ -9,11 +9,13 @@ import eu.alkismavridis.euljava.parser.token.EulTokenizer
 import java.io.BufferedReader
 
 
-class DefaultEulParser(reader: BufferedReader, private val logger:EulLogger, private val options: CompileOptions) : EulParser {
+class DefaultEulParser(reader: BufferedReader, private val logger: EulLogger, private val options: CompileOptions) :
+    EulParser {
     private val tokeniser = EulTokenizer(reader, logger, options)
 
     override fun getNextStatement(): EulStatement? {
-        val nextToken = tokeniser.getNextToken(true) ?: return null
+        // TODO get the words from the tokens from tokenizer and create the abstract syntax tree.
+        //  We return one statement each time
         return ReturnStatement(BooleanLiteral(true, 5, 5), 5, 5)
     }
 }

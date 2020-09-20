@@ -21,6 +21,7 @@ class EulTokenizer(
     private val characterLiteralTokenizer = CharacterLiteralTokenizer(logger, this)
     private val stringLiteralTokenizer = StringLiteralTokenizer(logger, this)
 
+    // state
     private var line = 1
     private var column = 1
     private var rolledBackCharacter: Char = '\u0000'

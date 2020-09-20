@@ -30,18 +30,22 @@ class CliCompiler {
             throw IllegalArgumentException("Please provider input file and output file")
         }
 
-        return CompileOptions(params[0])
+        return CompileOptions(params[0], 32, 64)
     }
 
     private fun compileFile(options: CompileOptions) {
         val statements = mutableListOf<EulStatement>()
         while(true) {
-            val parser = createParser(options)
+            val parser = this.createParser(options)
             val nextStatement = parser.getNextStatement() ?: break
             statements.add(nextStatement)
         }
+        if (this.logger.hasErrors) return
 
+        // Dummy area starts here...
         FileAnalyser(this.logger, statements).analyse()
+        if (this.logger.hasErrors) return
+
         DoNothingEmitter(this.logger).emitStatements(statements)
     }
 
