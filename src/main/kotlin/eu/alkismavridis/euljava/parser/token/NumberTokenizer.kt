@@ -86,9 +86,7 @@ class NumberTokenizer(
         try {
             return parseLong(valueString)
         } catch (e: NumberFormatException) {
-            val errorMessage = "Invalid integer number: $valueString"
-            this.logger.error(startingLine, startingColumn, errorMessage)
-            throw TokenizerException(startingLine, startingColumn, errorMessage)
+            throw TokenizerException(startingLine, startingColumn, "Invalid integer number: $valueString")
         }
     }
 
@@ -99,9 +97,7 @@ class NumberTokenizer(
         try {
             return parseDouble(valueString)
         } catch (e: NumberFormatException) {
-            val errorMessage = "Invalid float number: $valueString"
-            this.logger.error(startingLine, startingColumn, errorMessage)
-            throw TokenizerException(startingLine, startingColumn, errorMessage)
+            throw TokenizerException(startingLine, startingColumn, "Invalid float number: $valueString")
         }
     }
 }
