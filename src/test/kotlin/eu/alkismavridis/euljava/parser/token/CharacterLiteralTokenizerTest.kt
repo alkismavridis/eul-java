@@ -26,18 +26,18 @@ internal class CharacterLiteralTokenizerTest {
         val tokenizer = this.createTokenizer("'")
 
         assertThatExceptionOfType(TokenizerException::class.java)
-            .isThrownBy {tokenizer.getNextToken(true)}
+            .isThrownBy { tokenizer.getNextToken(true) }
             .withMessage("End of file found while parsing character")
-            .matches{ it.line == 1 && it.column == 1}
+            .matches { it.line == 1 && it.column == 1 }
     }
 
     @Test
     fun shouldThrowIfEndOfLineIsFound() {
         val tokenizer = this.createTokenizer("'\n'")
         assertThatExceptionOfType(TokenizerException::class.java)
-            .isThrownBy {tokenizer.getNextToken(true)}
+            .isThrownBy { tokenizer.getNextToken(true) }
             .withMessage("Illegal end of line while parsing character")
-            .matches{ it.line == 1 && it.column == 1}
+            .matches { it.line == 1 && it.column == 1 }
     }
 
     @Test
@@ -50,9 +50,9 @@ internal class CharacterLiteralTokenizerTest {
     @Test
     fun shouldThrowIfSecondCharacterIsFound() {
         assertThatExceptionOfType(TokenizerException::class.java)
-            .isThrownBy {this.createTokenizer("'ab'").getNextToken(true)}
+            .isThrownBy { this.createTokenizer("'ab'").getNextToken(true) }
             .withMessage("Expected ' but found b instead")
-            .matches{ it.line == 1 && it.column == 3}
+            .matches { it.line == 1 && it.column == 3 }
     }
 
     @Test
@@ -77,23 +77,23 @@ internal class CharacterLiteralTokenizerTest {
     @Test
     fun shouldRejectIllegalEscapeCharacters() {
         assertThatExceptionOfType(TokenizerException::class.java)
-            .isThrownBy {this.createTokenizer("'\\g'").getNextToken(true)}
+            .isThrownBy { this.createTokenizer("'\\g'").getNextToken(true) }
             .withMessage("Illegal escape character g")
-            .matches{ it.line == 1 && it.column == 1}
+            .matches { it.line == 1 && it.column == 1 }
 
         assertThatExceptionOfType(TokenizerException::class.java)
-            .isThrownBy {this.createTokenizer("'\\").getNextToken(true)}
+            .isThrownBy { this.createTokenizer("'\\").getNextToken(true) }
             .withMessage("End of file found while parsing escape character")
-            .matches{ it.line == 1 && it.column == 1}
+            .matches { it.line == 1 && it.column == 1 }
     }
 
     @Test
     fun shouldRejectAdditionalCharactersAfterEscape() {
         val tokenizer = this.createTokenizer("'\\na'")
         assertThatExceptionOfType(TokenizerException::class.java)
-            .isThrownBy {tokenizer.getNextToken(true)}
+            .isThrownBy { tokenizer.getNextToken(true) }
             .withMessage("Expected ' but found a instead")
-            .matches{ it.line == 1 && it.column == 4}
+            .matches { it.line == 1 && it.column == 4 }
     }
 
     @Test
@@ -109,37 +109,37 @@ internal class CharacterLiteralTokenizerTest {
         assertThatExceptionOfType(TokenizerException::class.java)
             .isThrownBy { this.createTokenizer("'\\u").getNextToken(true) }
             .withMessage("End of file found while parsing unicode literal")
-            .matches{ it.line == 1 && it.column == 4}
+            .matches { it.line == 1 && it.column == 4 }
 
         assertThatExceptionOfType(TokenizerException::class.java)
             .isThrownBy { this.createTokenizer("'\\u'").getNextToken(true) }
             .withMessage("Expected hex digit but found ' instead")
-            .matches{ it.line == 1 && it.column == 4}
+            .matches { it.line == 1 && it.column == 4 }
 
         assertThatExceptionOfType(TokenizerException::class.java)
             .isThrownBy { this.createTokenizer("'\\u7'").getNextToken(true) }
             .withMessage("Expected hex digit but found ' instead")
-            .matches{ it.line == 1 && it.column == 5}
+            .matches { it.line == 1 && it.column == 5 }
 
         assertThatExceptionOfType(TokenizerException::class.java)
             .isThrownBy { this.createTokenizer("'\\u77'").getNextToken(true) }
             .withMessage("Expected hex digit but found ' instead")
-            .matches{it.line == 1 && it.column == 6}
+            .matches { it.line == 1 && it.column == 6 }
 
         assertThatExceptionOfType(TokenizerException::class.java)
             .isThrownBy { this.createTokenizer("'\\u777'").getNextToken(true) }
             .withMessage("Expected hex digit but found ' instead")
-            .matches{ it.line == 1 && it.column == 7}
+            .matches { it.line == 1 && it.column == 7 }
 
         assertThatExceptionOfType(TokenizerException::class.java)
             .isThrownBy { this.createTokenizer("'\\u77785'").getNextToken(true) }
             .withMessage("Expected ' but found 5 instead")
-            .matches{ it.line == 1 && it.column == 8}
+            .matches { it.line == 1 && it.column == 8 }
     }
 
 
     /// UTILS
-    private fun createTokenizer(code: String) : EulTokenizer {
+    private fun createTokenizer(code: String): EulTokenizer {
         val reader = StringReader(code)
         return EulTokenizer(reader, this.logger, this.options)
     }
