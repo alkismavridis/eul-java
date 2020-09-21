@@ -1,6 +1,6 @@
 package eu.alkismavridis.euljava
 
-import eu.alkismavridis.euljava.infrastructure.CliCompiler
+import eu.alkismavridis.euljava.cli.CliCompiler
 import java.io.IOException
 import java.util.logging.LogManager
 

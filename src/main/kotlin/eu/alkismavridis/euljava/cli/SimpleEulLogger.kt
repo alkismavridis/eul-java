@@ -1,4 +1,4 @@
-package eu.alkismavridis.euljava.infrastructure
+package eu.alkismavridis.euljava.cli
 
 import eu.alkismavridis.euljava.core.EulFatalErrorException
 import eu.alkismavridis.euljava.core.EulLogger
