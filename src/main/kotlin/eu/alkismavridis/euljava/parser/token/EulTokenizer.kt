@@ -51,7 +51,7 @@ class EulTokenizer(
         } else if (nextNonWhite == '"') {
             return this.stringLiteralTokenizer.parse(this.line, this.column - 1)
         }
-        // TODO add  support fot back-quotes ``
+        // TODO add  support for back-quotes ``
 
 
         val asSpecialCharacter = this.specialCharacterTokenizer.parse(nextNonWhite, this.line, this.column - 1)

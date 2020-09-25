@@ -6,6 +6,7 @@ import eu.alkismavridis.euljava.core.ast.expressions.tokens.BooleanLiteral
 import eu.alkismavridis.euljava.core.ast.expressions.tokens.EulReference
 import eu.alkismavridis.euljava.core.ast.expressions.tokens.NullLiteral
 import eu.alkismavridis.euljava.core.ast.keywords.KeywordToken
+import eu.alkismavridis.euljava.core.ast.keywords.KeywordType
 
 /** Returns one of: EulReference, KeywordToken, BooleanLiteral, NullLiteral */
 class WordTokenizer(private val logger: EulLogger, private val source: CharacterSource) {
@@ -41,25 +42,25 @@ class WordTokenizer(private val logger: EulLogger, private val source: Character
             "null" -> NullLiteral(line, column)
 
             // definitions
-            "var" -> KeywordToken("var", line, column)
-            "val" -> KeywordToken("val", line, column)
-            "fun" -> KeywordToken("fun", line, column)
+            "var" -> KeywordToken(KeywordType.VAR, line, column)
+            "val" -> KeywordToken(KeywordType.VAL, line, column)
+            "fun" -> KeywordToken(KeywordType.FUN, line, column)
 
 
             // conditional
-            "if" -> KeywordToken("if", line, column)
-            "else" -> KeywordToken("else", line, column)
-            "switch" -> KeywordToken("switch", line, column)
+            "if" -> KeywordToken(KeywordType.IF, line, column)
+            "else" -> KeywordToken(KeywordType.ELSE, line, column)
+            "switch" -> KeywordToken(KeywordType.SWITCH, line, column)
 
             //loops
-            "for" -> KeywordToken("for", line, column)
-            "while" -> KeywordToken("while", line, column)
-            "break" -> KeywordToken("break", line, column)
-            "continue" -> KeywordToken("continue", line, column)
+            "for" -> KeywordToken(KeywordType.FOR, line, column)
+            "while" -> KeywordToken(KeywordType.WHILE, line, column)
+            "break" -> KeywordToken(KeywordType.BREAK, line, column)
+            "continue" -> KeywordToken(KeywordType.CONTINUE, line, column)
 
             // return
-            "return" -> KeywordToken("return", line, column)
-            "throw" -> KeywordToken("throw", line, column)
+            "return" -> KeywordToken(KeywordType.RETURN, line, column)
+            "throw" -> KeywordToken(KeywordType.THROW, line, column)
 
             else -> null
         }

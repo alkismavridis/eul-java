@@ -2,6 +2,7 @@ package eu.alkismavridis.euljava.parser.token
 
 import eu.alkismavridis.euljava.core.CompileOptions
 import eu.alkismavridis.euljava.core.EulLogger
+import eu.alkismavridis.euljava.core.ast.keywords.KeywordType
 import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertBooleanLiteral
 import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertCharLiteral
 import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertEulReference
@@ -180,21 +181,21 @@ internal class WordTokenizerTest {
         assertBooleanLiteral(tokenizer.getNextToken(true), false, 1, 6)
         assertNullLiteral(tokenizer.getNextToken(true), 1, 12)
 
-        assertKeyword(tokenizer.getNextToken(true), "var", 2, 1)
-        assertKeyword(tokenizer.getNextToken(true), "val", 2, 5)
-        assertKeyword(tokenizer.getNextToken(true), "fun", 2, 9)
+        assertKeyword(tokenizer.getNextToken(true), KeywordType.VAR, 2, 1)
+        assertKeyword(tokenizer.getNextToken(true), KeywordType.VAL, 2, 5)
+        assertKeyword(tokenizer.getNextToken(true), KeywordType.FUN, 2, 9)
 
-        assertKeyword(tokenizer.getNextToken(true), "if", 3, 1)
-        assertKeyword(tokenizer.getNextToken(true), "else", 3, 4)
-        assertKeyword(tokenizer.getNextToken(true), "switch", 3, 9)
+        assertKeyword(tokenizer.getNextToken(true), KeywordType.IF, 3, 1)
+        assertKeyword(tokenizer.getNextToken(true), KeywordType.ELSE, 3, 4)
+        assertKeyword(tokenizer.getNextToken(true), KeywordType.SWITCH, 3, 9)
 
-        assertKeyword(tokenizer.getNextToken(true), "for", 4, 1)
-        assertKeyword(tokenizer.getNextToken(true), "while", 4, 5)
-        assertKeyword(tokenizer.getNextToken(true), "break", 4, 11)
-        assertKeyword(tokenizer.getNextToken(true), "continue", 4, 17)
+        assertKeyword(tokenizer.getNextToken(true), KeywordType.FOR, 4, 1)
+        assertKeyword(tokenizer.getNextToken(true), KeywordType.WHILE, 4, 5)
+        assertKeyword(tokenizer.getNextToken(true), KeywordType.BREAK, 4, 11)
+        assertKeyword(tokenizer.getNextToken(true), KeywordType.CONTINUE, 4, 17)
 
-        assertKeyword(tokenizer.getNextToken(true), "return", 5, 1)
-        assertKeyword(tokenizer.getNextToken(true), "throw", 5, 8)
+        assertKeyword(tokenizer.getNextToken(true), KeywordType.RETURN, 5, 1)
+        assertKeyword(tokenizer.getNextToken(true), KeywordType.THROW, 5, 8)
 
         // Check for false positives. Those are simply references, not keywords.
         assertEulReference(tokenizer.getNextToken(true), "ifif", 6, 1)
