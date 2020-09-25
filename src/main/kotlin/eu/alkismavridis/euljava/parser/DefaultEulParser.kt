@@ -37,6 +37,4 @@ class DefaultEulParser(reader: BufferedReader, private val logger: EulLogger, pr
 
         return this.tokenizer.getNextToken(skipNewLines)
     }
-
-
 }
