@@ -7,8 +7,8 @@ import eu.alkismavridis.euljava.core.ast.operators.SpecialCharacterToken
 
 /** Returns OperatorToken, ControlCharacterToken, CommentToken or null */
 class SpecialCharacterTokenizer(private val logger: EulLogger, private val source: CharacterSource) {
-    fun parse(alreadyReadChar: Char, startingLine: Int, startingColumn: Int) : EulToken? {
-        return when(alreadyReadChar) {
+    fun parse(alreadyReadChar: Char, startingLine: Int, startingColumn: Int): EulToken? {
+        return when (alreadyReadChar) {
             // operators
             '=' -> this.readEqualsStartingOperator(startingLine, startingColumn)
             '+' -> this.readPlusStartingOperator(startingLine, startingColumn)
@@ -49,7 +49,7 @@ class SpecialCharacterTokenizer(private val logger: EulLogger, private val sourc
 
     /// OPERATOR EXTENSIONS
     private fun readEqualsStartingOperator(startingLine: Int, startingColumn: Int): EulToken {
-        return when(val nextChar = this.source.getNextChar()) {
+        return when (val nextChar = this.source.getNextChar()) {
             '=' -> this.readDoubleEqualsStartingOperator(startingLine, startingColumn)
             else -> {
                 this.source.rollBackCharacter(nextChar)
@@ -59,7 +59,7 @@ class SpecialCharacterTokenizer(private val logger: EulLogger, private val sourc
     }
 
     private fun readDoubleEqualsStartingOperator(startingLine: Int, startingColumn: Int): EulToken {
-        return when(val nextChar = this.source.getNextChar()) {
+        return when (val nextChar = this.source.getNextChar()) {
             '=' -> SpecialCharacterToken("===", startingLine, startingColumn)
             else -> {
                 this.source.rollBackCharacter(nextChar)
@@ -69,7 +69,7 @@ class SpecialCharacterTokenizer(private val logger: EulLogger, private val sourc
     }
 
     private fun readNotStartingOperator(startingLine: Int, startingColumn: Int): EulToken {
-        return when(val nextChar = this.source.getNextChar()) {
+        return when (val nextChar = this.source.getNextChar()) {
             '=' -> this.readNotEqualsStartingOperator(startingLine, startingColumn)
             else -> {
                 this.source.rollBackCharacter(nextChar)
@@ -79,7 +79,7 @@ class SpecialCharacterTokenizer(private val logger: EulLogger, private val sourc
     }
 
     private fun readNotEqualsStartingOperator(startingLine: Int, startingColumn: Int): EulToken {
-        return when(val nextChar = this.source.getNextChar()) {
+        return when (val nextChar = this.source.getNextChar()) {
             '=' -> SpecialCharacterToken("!==", startingLine, startingColumn)
             else -> {
                 this.source.rollBackCharacter(nextChar)
@@ -89,7 +89,7 @@ class SpecialCharacterTokenizer(private val logger: EulLogger, private val sourc
     }
 
     private fun readPlusStartingOperator(startingLine: Int, startingColumn: Int): EulToken {
-        return when(val nextChar = this.source.getNextChar()) {
+        return when (val nextChar = this.source.getNextChar()) {
             '+' -> SpecialCharacterToken("++", startingLine, startingColumn)
             '=' -> SpecialCharacterToken("+=", startingLine, startingColumn)
             else -> {
@@ -100,7 +100,7 @@ class SpecialCharacterTokenizer(private val logger: EulLogger, private val sourc
     }
 
     private fun readMinusStartingOperator(startingLine: Int, startingColumn: Int): EulToken {
-        return when(val nextChar = this.source.getNextChar()) {
+        return when (val nextChar = this.source.getNextChar()) {
             '-' -> SpecialCharacterToken("--", startingLine, startingColumn)
             '=' -> SpecialCharacterToken("-=", startingLine, startingColumn)
             '>' -> SpecialCharacterToken("->", startingLine, startingColumn)
@@ -112,7 +112,7 @@ class SpecialCharacterTokenizer(private val logger: EulLogger, private val sourc
     }
 
     private fun readStarStartingOperator(startingLine: Int, startingColumn: Int): EulToken {
-        return when(val nextChar = this.source.getNextChar()) {
+        return when (val nextChar = this.source.getNextChar()) {
             '=' -> SpecialCharacterToken("*=", startingLine, startingColumn)
             else -> {
                 this.source.rollBackCharacter(nextChar)
@@ -122,7 +122,7 @@ class SpecialCharacterTokenizer(private val logger: EulLogger, private val sourc
     }
 
     private fun readSlashStartingOperatorOrComment(startingLine: Int, startingColumn: Int): EulToken {
-        return when(val nextChar = this.source.getNextChar()) {
+        return when (val nextChar = this.source.getNextChar()) {
             '=' -> SpecialCharacterToken("/=", startingLine, startingColumn)
             '/' -> this.readSingleLineComment(startingLine, startingColumn)
             '*' -> this.readMultiLineComment(startingLine, startingColumn)
@@ -134,7 +134,7 @@ class SpecialCharacterTokenizer(private val logger: EulLogger, private val sourc
     }
 
     private fun readLargerStartingOperator(startingLine: Int, startingColumn: Int): EulToken {
-        return when(val nextChar = this.source.getNextChar()) {
+        return when (val nextChar = this.source.getNextChar()) {
             '=' -> SpecialCharacterToken(">=", startingLine, startingColumn)
             else -> {
                 this.source.rollBackCharacter(nextChar)
@@ -144,7 +144,7 @@ class SpecialCharacterTokenizer(private val logger: EulLogger, private val sourc
     }
 
     private fun readSmallerStartingOperator(startingLine: Int, startingColumn: Int): EulToken {
-        return when(val nextChar = this.source.getNextChar()) {
+        return when (val nextChar = this.source.getNextChar()) {
             '=' -> SpecialCharacterToken("<=", startingLine, startingColumn)
             else -> {
                 this.source.rollBackCharacter(nextChar)
@@ -154,7 +154,7 @@ class SpecialCharacterTokenizer(private val logger: EulLogger, private val sourc
     }
 
     private fun readXorStartingOperator(startingLine: Int, startingColumn: Int): EulToken {
-        return when(val nextChar = this.source.getNextChar()) {
+        return when (val nextChar = this.source.getNextChar()) {
             '=' -> SpecialCharacterToken("^=", startingLine, startingColumn)
             else -> {
                 this.source.rollBackCharacter(nextChar)
@@ -164,7 +164,7 @@ class SpecialCharacterTokenizer(private val logger: EulLogger, private val sourc
     }
 
     private fun readPercentStartingOperator(startingLine: Int, startingColumn: Int): EulToken {
-        return when(val nextChar = this.source.getNextChar()) {
+        return when (val nextChar = this.source.getNextChar()) {
             '=' -> SpecialCharacterToken("%=", startingLine, startingColumn)
             else -> {
                 this.source.rollBackCharacter(nextChar)
@@ -174,7 +174,7 @@ class SpecialCharacterTokenizer(private val logger: EulLogger, private val sourc
     }
 
     private fun readOrStartingOperator(startingLine: Int, startingColumn: Int): EulToken {
-        return when(val nextChar = this.source.getNextChar()) {
+        return when (val nextChar = this.source.getNextChar()) {
             '=' -> SpecialCharacterToken("|=", startingLine, startingColumn)
             '|' -> SpecialCharacterToken("||", startingLine, startingColumn)
             else -> {
@@ -185,7 +185,7 @@ class SpecialCharacterTokenizer(private val logger: EulLogger, private val sourc
     }
 
     private fun readAndStartingOperator(startingLine: Int, startingColumn: Int): EulToken {
-        return when(val nextChar = this.source.getNextChar()) {
+        return when (val nextChar = this.source.getNextChar()) {
             '=' -> SpecialCharacterToken("&=", startingLine, startingColumn)
             '&' -> SpecialCharacterToken("&&", startingLine, startingColumn)
             else -> {
@@ -199,9 +199,12 @@ class SpecialCharacterTokenizer(private val logger: EulLogger, private val sourc
     /// COMMENT PARSING
     /** This method assumes that the start of the comment has already been read */
     private fun readSingleLineComment(startingLine: Int, startingColumn: Int): EulCommentToken {
-        while(true) {
+        while (true) {
             val nextChar = this.source.getNextChar()
-            if (nextChar == '\u0000' || nextChar == '\n') {
+            if (nextChar == '\u0000') {
+                return EulCommentToken(startingLine, startingColumn)
+            } else if (nextChar == '\n') {
+                this.source.rollBackCharacter('\n')
                 return EulCommentToken(startingLine, startingColumn)
             }
         }
@@ -211,19 +214,15 @@ class SpecialCharacterTokenizer(private val logger: EulLogger, private val sourc
     private fun readMultiLineComment(startingLine: Int, startingColumn: Int): EulCommentToken {
         var nextChar = this.source.getNextChar()
 
-        while(true) {
+        while (true) {
             if (nextChar == '\u0000') {
                 throw TokenizerException(startingLine, startingColumn, "End of file found while parsing multi-line comment")
-            }
-
-            else if (nextChar == '*') {
+            } else if (nextChar == '*') {
                 nextChar = this.source.getNextChar()
                 if (nextChar == '/') {
                     return EulCommentToken(startingLine, startingColumn)
                 }
-            }
-
-            else {
+            } else {
                 nextChar = this.source.getNextChar()
             }
         }

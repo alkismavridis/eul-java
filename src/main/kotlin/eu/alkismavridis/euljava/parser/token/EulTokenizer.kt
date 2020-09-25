@@ -62,7 +62,7 @@ class EulTokenizer(
 
     fun requireNextToken(skipNewLines: Boolean): EulToken {
         return this.getNextToken(skipNewLines)
-            ?: throw TokenizerException(this.line, this.column, "End of file while parsing")
+            ?: throw TokenizerException(this.line, this.column, "End of file found while parsing")
     }
 
     fun getNextNonCommentToken(skipNewLines: Boolean): EulToken? {
@@ -75,7 +75,7 @@ class EulTokenizer(
     fun requireNextNonCommentToken(skipNewLines: Boolean): EulToken? {
         while (true) {
             val nextToken = this.getNextToken(skipNewLines)
-                ?: throw TokenizerException(this.line, this.column, "End of file while parsing")
+                ?: throw TokenizerException(this.line, this.column, "End of file found while parsing")
 
             if (nextToken !is EulCommentToken) {
                 return nextToken

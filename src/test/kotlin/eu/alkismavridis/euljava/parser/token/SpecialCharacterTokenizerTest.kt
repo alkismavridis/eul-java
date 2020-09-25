@@ -3,6 +3,7 @@ package eu.alkismavridis.euljava.parser.token
 import eu.alkismavridis.euljava.core.CompileOptions
 import eu.alkismavridis.euljava.core.EulLogger
 import eu.alkismavridis.euljava.core.ast.operators.EulCommentToken
+import eu.alkismavridis.euljava.core.ast.operators.NewLineToken
 import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertEulReference
 import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertOperator
 import org.assertj.core.api.Assertions.assertThat
@@ -52,36 +53,37 @@ internal class SpecialCharacterTokenizerTest {
     @Test
     fun shouldHandleSingleLineComment() {
         val tokenizer = this.createTokenizer("hello//this is a comment\nworld")
-        assertEulReference(tokenizer.getNextToken(true), "hello", 1, 1)
-        assertThat(tokenizer.getNextToken(true)).isInstanceOf(EulCommentToken::class.java)
-        assertEulReference(tokenizer.getNextToken(true), "world", 2, 1)
-        assertThat(tokenizer.getNextToken(true)).isNull()
+        assertEulReference(tokenizer.getNextToken(false), "hello", 1, 1)
+        assertThat(tokenizer.getNextToken(false)).isInstanceOf(EulCommentToken::class.java)
+        assertThat(tokenizer.getNextToken(false)).isInstanceOf(NewLineToken::class.java)
+        assertEulReference(tokenizer.getNextToken(false), "world", 2, 1)
+        assertThat(tokenizer.getNextToken(false)).isNull()
     }
 
     @Test
     fun shouldHandleSingleLineCommentAtEndOfFile() {
-        val tokenizer = this.createTokenizer("hello//this is a commen")
-        assertEulReference(tokenizer.getNextToken(true), "hello", 1, 1)
-        assertThat(tokenizer.getNextToken(true)).isInstanceOf(EulCommentToken::class.java)
-        assertThat(tokenizer.getNextToken(true)).isNull()
+        val tokenizer = this.createTokenizer("hello//this is a comment")
+        assertEulReference(tokenizer.getNextToken(false), "hello", 1, 1)
+        assertThat(tokenizer.getNextToken(false)).isInstanceOf(EulCommentToken::class.java)
+        assertThat(tokenizer.getNextToken(false)).isNull()
     }
 
     @Test
     fun shouldParseMultiLineCommentInSameLine() {
         val tokenizer = this.createTokenizer("hello/*this is a comment * / still a comment */world")
-        assertEulReference(tokenizer.getNextToken(true), "hello", 1, 1)
-        assertThat(tokenizer.getNextToken(true)).isInstanceOf(EulCommentToken::class.java)
-        assertEulReference(tokenizer.getNextToken(true), "world", 1, 48)
-        assertThat(tokenizer.getNextToken(true)).isNull()
+        assertEulReference(tokenizer.getNextToken(false), "hello", 1, 1)
+        assertThat(tokenizer.getNextToken(false)).isInstanceOf(EulCommentToken::class.java)
+        assertEulReference(tokenizer.getNextToken(false), "world", 1, 48)
+        assertThat(tokenizer.getNextToken(false)).isNull()
     }
 
     @Test
     fun shouldParseMultiLineCommentInMultipleLines() {
         val tokenizer = this.createTokenizer("hello/*this is a comment \n still a \ncomment **/world")
-        assertEulReference(tokenizer.getNextToken(true), "hello", 1, 1)
-        assertThat(tokenizer.getNextToken(true)).isInstanceOf(EulCommentToken::class.java)
-        assertEulReference(tokenizer.getNextToken(true), "world", 3, 12)
-        assertThat(tokenizer.getNextToken(true)).isNull()
+        assertEulReference(tokenizer.getNextToken(false), "hello", 1, 1)
+        assertThat(tokenizer.getNextToken(false)).isInstanceOf(EulCommentToken::class.java)
+        assertEulReference(tokenizer.getNextToken(false), "world", 3, 12)
+        assertThat(tokenizer.getNextToken(false)).isNull()
     }
 
     @Test
