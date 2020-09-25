@@ -2,6 +2,7 @@ package eu.alkismavridis.euljava.parser.token
 
 import eu.alkismavridis.euljava.core.CompileOptions
 import eu.alkismavridis.euljava.core.EulLogger
+import eu.alkismavridis.euljava.core.ast.operators.SpecialCharacterType
 import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertCharLiteral
 import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertEulReference
 import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertOperator
@@ -60,13 +61,13 @@ internal class CharacterLiteralTokenizerTest {
         val tokenizer = this.createTokenizer("'\\n'+'\\t' + '\\r' - '\\b'and'\\''")
 
         assertCharLiteral(tokenizer.getNextToken(true), '\n'.toLong(), 1, 1)
-        assertOperator(tokenizer.getNextToken(true), "+", 1, 5)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.PLUS, 1, 5)
 
         assertCharLiteral(tokenizer.getNextToken(true), '\t'.toLong(), 1, 6)
-        assertOperator(tokenizer.getNextToken(true), "+", 1, 11)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.PLUS, 1, 11)
 
         assertCharLiteral(tokenizer.getNextToken(true), '\r'.toLong(), 1, 13)
-        assertOperator(tokenizer.getNextToken(true), "-", 1, 18)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.MINUS, 1, 18)
 
         assertCharLiteral(tokenizer.getNextToken(true), '\b'.toLong(), 1, 20)
         assertEulReference(tokenizer.getNextToken(true), "and", 1, 24)

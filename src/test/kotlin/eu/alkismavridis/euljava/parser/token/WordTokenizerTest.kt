@@ -3,6 +3,7 @@ package eu.alkismavridis.euljava.parser.token
 import eu.alkismavridis.euljava.core.CompileOptions
 import eu.alkismavridis.euljava.core.EulLogger
 import eu.alkismavridis.euljava.core.ast.keywords.KeywordType
+import eu.alkismavridis.euljava.core.ast.operators.SpecialCharacterType
 import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertBooleanLiteral
 import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertCharLiteral
 import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertEulReference
@@ -74,72 +75,72 @@ internal class WordTokenizerTest {
 
         // first line
         assertEulReference(tokenizer.getNextToken(true), "tilde", 1, 1)
-        assertOperator(tokenizer.getNextToken(true), "~", 1, 6)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.TILDE, 1, 6)
 
         assertEulReference(tokenizer.getNextToken(true), "exclamation", 1, 7)
-        assertOperator(tokenizer.getNextToken(true), "!", 1, 18)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.NOT, 1, 18)
 
         assertEulReference(tokenizer.getNextToken(true), "at", 1, 19)
-        assertOperator(tokenizer.getNextToken(true), "@", 1, 21)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.AT, 1, 21)
 
         assertEulReference(tokenizer.getNextToken(true), "hash", 1, 22)
-        assertOperator(tokenizer.getNextToken(true), "#", 1, 26)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.HASH, 1, 26)
 
         assertEulReference(tokenizer.getNextToken(true), "dollar", 1, 27)
-        assertOperator(tokenizer.getNextToken(true), "\$", 1, 33)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.DOLLAR, 1, 33)
 
         assertEulReference(tokenizer.getNextToken(true), "percent", 1, 34)
-        assertOperator(tokenizer.getNextToken(true), "%", 1, 41)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.PERCENT, 1, 41)
 
         assertEulReference(tokenizer.getNextToken(true), "xor", 1, 42)
-        assertOperator(tokenizer.getNextToken(true), "^", 1, 45)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.XOR, 1, 45)
 
         assertEulReference(tokenizer.getNextToken(true), "and", 1, 46)
-        assertOperator(tokenizer.getNextToken(true), "&", 1, 49)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.AND, 1, 49)
 
         assertEulReference(tokenizer.getNextToken(true), "star", 1, 50)
-        assertOperator(tokenizer.getNextToken(true), "*", 1, 54)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.STAR, 1, 54)
 
         // second line
         assertEulReference(tokenizer.getNextToken(true), "parenthesisOpen", 2, 1)
-        assertOperator(tokenizer.getNextToken(true), "(", 2, 16)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.PARENTHESIS_OPEN, 2, 16)
 
         assertEulReference(tokenizer.getNextToken(true), "parenthesisClose", 2, 17)
-        assertOperator(tokenizer.getNextToken(true), ")", 2, 33)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.PARENTHESIS_CLOSE, 2, 33)
 
         assertEulReference(tokenizer.getNextToken(true), "minus", 2, 34)
-        assertOperator(tokenizer.getNextToken(true), "-", 2, 39)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.MINUS, 2, 39)
 
         assertEulReference(tokenizer.getNextToken(true), "plus", 2, 40)
-        assertOperator(tokenizer.getNextToken(true), "+", 2, 44)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.PLUS, 2, 44)
 
         assertEulReference(tokenizer.getNextToken(true), "equals", 2, 45)
-        assertOperator(tokenizer.getNextToken(true), "=", 2, 51)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.EQUALS, 2, 51)
 
         assertEulReference(tokenizer.getNextToken(true), "curlyOpen", 2, 52)
-        assertOperator(tokenizer.getNextToken(true), "{", 2, 61)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.CURLY_OPEN, 2, 61)
 
         assertEulReference(tokenizer.getNextToken(true), "curlyClose", 2, 62)
-        assertOperator(tokenizer.getNextToken(true), "}", 2, 72)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.CURLY_CLOSE, 2, 72)
 
         assertEulReference(tokenizer.getNextToken(true), "squareOpen", 2, 73)
-        assertOperator(tokenizer.getNextToken(true), "[", 2, 83)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.SQUARE_OPEN, 2, 83)
 
         assertEulReference(tokenizer.getNextToken(true), "squareClose", 2, 84)
-        assertOperator(tokenizer.getNextToken(true), "]", 2, 95)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.SQUARE_CLOSE, 2, 95)
 
         // third line
         assertEulReference(tokenizer.getNextToken(true), "backslash", 3, 1)
-        assertOperator(tokenizer.getNextToken(true), "\\", 3, 10)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.BACKSLASH, 3, 10)
 
         assertEulReference(tokenizer.getNextToken(true), "or", 3, 11)
-        assertOperator(tokenizer.getNextToken(true), "|", 3, 13)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.OR, 3, 13)
 
         assertEulReference(tokenizer.getNextToken(true), "colon", 3, 14)
-        assertOperator(tokenizer.getNextToken(true), ":", 3, 19)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.COLON, 3, 19)
 
         assertEulReference(tokenizer.getNextToken(true), "semicolon", 3, 20)
-        assertOperator(tokenizer.getNextToken(true), ";", 3, 29)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.SEMICOLON, 3, 29)
 
         assertEulReference(tokenizer.getNextToken(true), "singleQuote", 3, 30)
         assertCharLiteral(tokenizer.getNextToken(true), 'a'.toLong(), 3, 41)
@@ -148,22 +149,22 @@ internal class WordTokenizerTest {
         assertStringLiteral(tokenizer.getNextToken(true), "hi", 3, 55)
 
         assertEulReference(tokenizer.getNextToken(true), "comma", 3, 59)
-        assertOperator(tokenizer.getNextToken(true), ",", 3, 64)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.COMMA, 3, 64)
 
         assertEulReference(tokenizer.getNextToken(true), "smaller", 3, 65)
-        assertOperator(tokenizer.getNextToken(true), "<", 3, 72)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.LESS, 3, 72)
 
         assertEulReference(tokenizer.getNextToken(true), "dot", 3, 73)
-        assertOperator(tokenizer.getNextToken(true), ".", 3, 76)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.DOT, 3, 76)
 
         assertEulReference(tokenizer.getNextToken(true), "greater", 3, 77)
-        assertOperator(tokenizer.getNextToken(true), ">", 3, 84)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.GREATER, 3, 84)
 
         assertEulReference(tokenizer.getNextToken(true), "question", 3, 85)
-        assertOperator(tokenizer.getNextToken(true), "?", 3, 93)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.QUESTION_MARK, 3, 93)
 
         assertEulReference(tokenizer.getNextToken(true), "slash", 3, 94)
-        assertOperator(tokenizer.getNextToken(true), "/", 3, 99)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.SLASH, 3, 99)
     }
 
     @Test

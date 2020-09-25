@@ -5,6 +5,7 @@ import eu.alkismavridis.euljava.core.ast.expressions.tokens.*
 import eu.alkismavridis.euljava.core.ast.keywords.KeywordToken
 import eu.alkismavridis.euljava.core.ast.keywords.KeywordType
 import eu.alkismavridis.euljava.core.ast.operators.SpecialCharacterToken
+import eu.alkismavridis.euljava.core.ast.operators.SpecialCharacterType
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Offset
 
@@ -40,11 +41,11 @@ class EulAssert {
             assertThat(asRef.column).isEqualTo(column)
         }
 
-        fun assertOperator(token: EulToken?, text: String, line: Int, column: Int) {
+        fun assertOperator(token: EulToken?, text: SpecialCharacterType, line: Int, column: Int) {
             assertThat(token).isNotNull().isInstanceOf(SpecialCharacterToken::class.java)
 
             val asOperator = token as SpecialCharacterToken
-            assertThat(asOperator.text).isEqualTo(text)
+            assertThat(asOperator.type).isEqualTo(text)
             assertThat(asOperator.line).isEqualTo(line)
             assertThat(asOperator.column).isEqualTo(column)
         }

@@ -4,6 +4,7 @@ import eu.alkismavridis.euljava.core.CompileOptions
 import eu.alkismavridis.euljava.core.EulLogger
 import eu.alkismavridis.euljava.core.ast.operators.EulCommentToken
 import eu.alkismavridis.euljava.core.ast.operators.NewLineToken
+import eu.alkismavridis.euljava.core.ast.operators.SpecialCharacterType
 import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertEulReference
 import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertOperator
 import org.assertj.core.api.Assertions.assertThat
@@ -19,21 +20,21 @@ internal class SpecialCharacterTokenizerTest {
     @Test
     fun shouldProperlyReadEqualsOperators() {
         val tokenizer = this.createTokenizer("== == = === ====")
-        assertOperator(tokenizer.getNextToken(true), "==", 1, 1)
-        assertOperator(tokenizer.getNextToken(true), "==", 1, 4)
-        assertOperator(tokenizer.getNextToken(true), "=", 1, 7)
-        assertOperator(tokenizer.getNextToken(true), "===", 1, 9)
-        assertOperator(tokenizer.getNextToken(true), "===", 1, 13)
-        assertOperator(tokenizer.getNextToken(true), "=", 1, 16)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.DOUBLE_EQUALS, 1, 1)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.DOUBLE_EQUALS, 1, 4)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.EQUALS, 1, 7)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.TRIPLE_EQUALS, 1, 9)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.TRIPLE_EQUALS, 1, 13)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.EQUALS, 1, 16)
         assertThat(tokenizer.getNextToken(true)).isNull()
     }
 
     @Test
     fun shouldProperlyReadPlusOperators() {
         val tokenizer = this.createTokenizer("++ += + ")
-        assertOperator(tokenizer.getNextToken(true), "++", 1, 1)
-        assertOperator(tokenizer.getNextToken(true), "+=", 1, 4)
-        assertOperator(tokenizer.getNextToken(true), "+", 1, 7)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.DOUBLE_PLUS, 1, 1)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.PLUS_EQUALS, 1, 4)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.PLUS, 1, 7)
         assertThat(tokenizer.getNextToken(true)).isNull()
     }
 
@@ -41,10 +42,10 @@ internal class SpecialCharacterTokenizerTest {
     fun shouldProperlyReadOperatorsWithStrings() {
         val tokenizer = this.createTokenizer("aa++aa-- +")
         assertEulReference(tokenizer.getNextToken(true), "aa", 1, 1)
-        assertOperator(tokenizer.getNextToken(true), "++", 1, 3)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.DOUBLE_PLUS, 1, 3)
         assertEulReference(tokenizer.getNextToken(true), "aa", 1, 5)
-        assertOperator(tokenizer.getNextToken(true), "--", 1, 7)
-        assertOperator(tokenizer.getNextToken(true), "+", 1, 10)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.DOUBLE_MINUS, 1, 7)
+        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.PLUS, 1, 10)
         assertThat(tokenizer.getNextToken(true)).isNull()
     }
 
