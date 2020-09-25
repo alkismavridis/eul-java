@@ -48,5 +48,6 @@ enum class SpecialCharacterType {
     OR_EQUALS,
     AND,
     DOUBLE_AND,
-    AND_EQUALS
+    AND_EQUALS,
+    NEW_LINE
 }

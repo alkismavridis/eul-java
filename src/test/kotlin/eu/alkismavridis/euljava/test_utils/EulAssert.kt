@@ -41,7 +41,7 @@ class EulAssert {
             assertThat(asRef.column).isEqualTo(column)
         }
 
-        fun assertOperator(token: EulToken?, text: SpecialCharacterType, line: Int, column: Int) {
+        fun assertSpecialCharacter(token: EulToken?, text: SpecialCharacterType, line: Int, column: Int) {
             assertThat(token).isNotNull().isInstanceOf(SpecialCharacterToken::class.java)
 
             val asOperator = token as SpecialCharacterToken

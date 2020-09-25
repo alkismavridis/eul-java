@@ -3,10 +3,9 @@ package eu.alkismavridis.euljava.parser.token
 import eu.alkismavridis.euljava.core.CompileOptions
 import eu.alkismavridis.euljava.core.EulLogger
 import eu.alkismavridis.euljava.core.ast.operators.EulCommentToken
-import eu.alkismavridis.euljava.core.ast.operators.NewLineToken
 import eu.alkismavridis.euljava.core.ast.operators.SpecialCharacterType
 import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertEulReference
-import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertOperator
+import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertSpecialCharacter
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.junit.jupiter.api.Test
@@ -23,10 +22,10 @@ internal class EulTokenizerTest {
     fun getNextToken_shouldReturnAllTokens() {
         val tokenizer = this.createTokenizer("hello +==//this is a comment\nworld")
         assertEulReference(tokenizer.getNextToken(false), "hello", 1, 1)
-        assertOperator(tokenizer.getNextToken(false), SpecialCharacterType.PLUS_EQUALS, 1, 7)
-        assertOperator(tokenizer.getNextToken(false), SpecialCharacterType.EQUALS, 1, 9)
+        assertSpecialCharacter(tokenizer.getNextToken(false), SpecialCharacterType.PLUS_EQUALS, 1, 7)
+        assertSpecialCharacter(tokenizer.getNextToken(false), SpecialCharacterType.EQUALS, 1, 9)
         assertThat(tokenizer.getNextToken(false)).isInstanceOf(EulCommentToken::class.java)
-        assertThat(tokenizer.getNextToken(false)).isInstanceOf(NewLineToken::class.java)
+        assertSpecialCharacter(tokenizer.getNextToken(false), SpecialCharacterType.NEW_LINE, 1, -1)
         assertEulReference(tokenizer.getNextToken(false), "world", 2, 1)
         assertThat(tokenizer.getNextToken(false)).isNull()
     }
@@ -35,8 +34,8 @@ internal class EulTokenizerTest {
     fun getNextToken_shouldBeAbleToSkipNewLineTokens() {
         val tokenizer = this.createTokenizer("hello +==//this is a comment\nworld")
         assertEulReference(tokenizer.getNextToken(true), "hello", 1, 1)
-        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.PLUS_EQUALS, 1, 7)
-        assertOperator(tokenizer.getNextToken(true), SpecialCharacterType.EQUALS, 1, 9)
+        assertSpecialCharacter(tokenizer.getNextToken(true), SpecialCharacterType.PLUS_EQUALS, 1, 7)
+        assertSpecialCharacter(tokenizer.getNextToken(true), SpecialCharacterType.EQUALS, 1, 9)
         assertThat(tokenizer.getNextToken(true)).isInstanceOf(EulCommentToken::class.java)
         assertEulReference(tokenizer.getNextToken(true), "world", 2, 1)
         assertThat(tokenizer.getNextToken(true)).isNull()
@@ -46,10 +45,10 @@ internal class EulTokenizerTest {
     fun requireNextToken_shouldReturnAllTokens() {
         val tokenizer = this.createTokenizer("hello +==//this is a comment\nworld")
         assertEulReference(tokenizer.requireNextToken(false), "hello", 1, 1)
-        assertOperator(tokenizer.requireNextToken(false), SpecialCharacterType.PLUS_EQUALS, 1, 7)
-        assertOperator(tokenizer.requireNextToken(false), SpecialCharacterType.EQUALS, 1, 9)
+        assertSpecialCharacter(tokenizer.requireNextToken(false), SpecialCharacterType.PLUS_EQUALS, 1, 7)
+        assertSpecialCharacter(tokenizer.requireNextToken(false), SpecialCharacterType.EQUALS, 1, 9)
         assertThat(tokenizer.requireNextToken(false)).isInstanceOf(EulCommentToken::class.java)
-        assertThat(tokenizer.requireNextToken(false)).isInstanceOf(NewLineToken::class.java)
+        assertSpecialCharacter(tokenizer.requireNextToken(false), SpecialCharacterType.NEW_LINE, 1, -1)
         assertEulReference(tokenizer.requireNextToken(false), "world", 2, 1)
 
         assertThatExceptionOfType(TokenizerException::class.java)
@@ -61,8 +60,8 @@ internal class EulTokenizerTest {
     fun requireNextToken_shouldBeAbleToSkipNewLineTokens() {
         val tokenizer = this.createTokenizer("hello +==//this is a comment\nworld")
         assertEulReference(tokenizer.requireNextToken(true), "hello", 1, 1)
-        assertOperator(tokenizer.requireNextToken(true), SpecialCharacterType.PLUS_EQUALS, 1, 7)
-        assertOperator(tokenizer.requireNextToken(true), SpecialCharacterType.EQUALS, 1, 9)
+        assertSpecialCharacter(tokenizer.requireNextToken(true), SpecialCharacterType.PLUS_EQUALS, 1, 7)
+        assertSpecialCharacter(tokenizer.requireNextToken(true), SpecialCharacterType.EQUALS, 1, 9)
         assertThat(tokenizer.requireNextToken(true)).isInstanceOf(EulCommentToken::class.java)
         assertEulReference(tokenizer.requireNextToken(true), "world", 2, 1)
 
@@ -75,9 +74,9 @@ internal class EulTokenizerTest {
     fun getNextNonCommentToken_shouldReturnAllNonCommentTokens() {
         val tokenizer = this.createTokenizer("hello +==//this is a comment\nworld")
         assertEulReference(tokenizer.getNextNonCommentToken(false), "hello", 1, 1)
-        assertOperator(tokenizer.getNextNonCommentToken(false), SpecialCharacterType.PLUS_EQUALS, 1, 7)
-        assertOperator(tokenizer.getNextNonCommentToken(false), SpecialCharacterType.EQUALS, 1, 9)
-        assertThat(tokenizer.getNextNonCommentToken(false)).isInstanceOf(NewLineToken::class.java)
+        assertSpecialCharacter(tokenizer.getNextNonCommentToken(false), SpecialCharacterType.PLUS_EQUALS, 1, 7)
+        assertSpecialCharacter(tokenizer.getNextNonCommentToken(false), SpecialCharacterType.EQUALS, 1, 9)
+        assertSpecialCharacter(tokenizer.getNextNonCommentToken(false), SpecialCharacterType.NEW_LINE, 1, -1)
         assertEulReference(tokenizer.getNextNonCommentToken(false), "world", 2, 1)
         assertThat(tokenizer.getNextNonCommentToken(false)).isNull()
     }
@@ -86,8 +85,8 @@ internal class EulTokenizerTest {
     fun getNextNonCommentToken_shouldBeAbleToSkipNewLineTokens() {
         val tokenizer = this.createTokenizer("hello +==//this is a comment\nworld//other comment")
         assertEulReference(tokenizer.getNextNonCommentToken(true), "hello", 1, 1)
-        assertOperator(tokenizer.getNextNonCommentToken(true), SpecialCharacterType.PLUS_EQUALS, 1, 7)
-        assertOperator(tokenizer.getNextNonCommentToken(true), SpecialCharacterType.EQUALS, 1, 9)
+        assertSpecialCharacter(tokenizer.getNextNonCommentToken(true), SpecialCharacterType.PLUS_EQUALS, 1, 7)
+        assertSpecialCharacter(tokenizer.getNextNonCommentToken(true), SpecialCharacterType.EQUALS, 1, 9)
         assertEulReference(tokenizer.getNextNonCommentToken(true), "world", 2, 1)
         assertThat(tokenizer.getNextNonCommentToken(true)).isNull()
     }
@@ -96,9 +95,9 @@ internal class EulTokenizerTest {
     fun requireNextNonCommentToken_shouldReturnAllTokens() {
         val tokenizer = this.createTokenizer("hello +==//this is a comment\nworld")
         assertEulReference(tokenizer.requireNextNonCommentToken(false), "hello", 1, 1)
-        assertOperator(tokenizer.requireNextNonCommentToken(false), SpecialCharacterType.PLUS_EQUALS, 1, 7)
-        assertOperator(tokenizer.requireNextNonCommentToken(false), SpecialCharacterType.EQUALS, 1, 9)
-        assertThat(tokenizer.requireNextNonCommentToken(false)).isInstanceOf(NewLineToken::class.java)
+        assertSpecialCharacter(tokenizer.requireNextNonCommentToken(false), SpecialCharacterType.PLUS_EQUALS, 1, 7)
+        assertSpecialCharacter(tokenizer.requireNextNonCommentToken(false), SpecialCharacterType.EQUALS, 1, 9)
+        assertSpecialCharacter(tokenizer.requireNextNonCommentToken(false), SpecialCharacterType.NEW_LINE, 1, -1)
         assertEulReference(tokenizer.requireNextNonCommentToken(false), "world", 2, 1)
 
         assertThatExceptionOfType(TokenizerException::class.java)
@@ -110,8 +109,8 @@ internal class EulTokenizerTest {
     fun requireNextNonCommentToken_shouldBeAbleToSkipNewLineTokens() {
         val tokenizer = this.createTokenizer("hello +==//this is a comment\nworld")
         assertEulReference(tokenizer.requireNextNonCommentToken(true), "hello", 1, 1)
-        assertOperator(tokenizer.requireNextNonCommentToken(true), SpecialCharacterType.PLUS_EQUALS, 1, 7)
-        assertOperator(tokenizer.requireNextNonCommentToken(true), SpecialCharacterType.EQUALS, 1, 9)
+        assertSpecialCharacter(tokenizer.requireNextNonCommentToken(true), SpecialCharacterType.PLUS_EQUALS, 1, 7)
+        assertSpecialCharacter(tokenizer.requireNextNonCommentToken(true), SpecialCharacterType.EQUALS, 1, 9)
         assertEulReference(tokenizer.requireNextNonCommentToken(true), "world", 2, 1)
 
         assertThatExceptionOfType(TokenizerException::class.java)
