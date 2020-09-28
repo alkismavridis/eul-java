@@ -104,6 +104,10 @@ class EulTokenizer(
     }
 
     override fun rollBackCharacter(ch: Char) {
+        if(this.rolledBackCharacter != '\u0000') {
+            throw TokenizerException(this.line, this.column, "Cannot roll back more than one character")
+        }
+
         this.rolledBackCharacter = ch
 
         if (ch == '\n') {

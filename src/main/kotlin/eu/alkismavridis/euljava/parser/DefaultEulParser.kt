@@ -11,15 +11,12 @@ import eu.alkismavridis.euljava.core.ast.statements.EulStatement
 import eu.alkismavridis.euljava.core.ast.statements.ReturnStatement
 import eu.alkismavridis.euljava.parser.token.EulTokenizer
 import java.io.BufferedReader
-import java.lang.Exception
 
-
-class ParserException(val line: Int, val column: Int, message: String) : Exception(message)
-
-class DefaultEulParser(reader: BufferedReader, private val logger: EulLogger, private val options: CompileOptions) :
-    EulParser {
+class DefaultEulParser(reader: BufferedReader, private val logger: EulLogger, private val options: CompileOptions) : TokenSource, EulParser {
     private val tokenizer = EulTokenizer(reader, logger, options)
     private var rolledBackToken: EulToken? = null
+
+    //private val expressionParser = ExpressionParser(this)
 
     override fun getNextStatement(): EulStatement? {
         val firstToken = this.getNextToken(true) ?: return null
@@ -39,21 +36,16 @@ class DefaultEulParser(reader: BufferedReader, private val logger: EulLogger, pr
     }
 
 
-    private fun parseReturnStatement(returnToken: EulToken) : ReturnStatement {
-        val firstExpressionToken = this.getNextToken(false)
-        if (firstExpressionToken == null || firstExpressionToken.getSpecialCharacterType() == SpecialCharacterType.NEW_LINE) {
-            return ReturnStatement(null, returnToken.line, returnToken.column)
-        }
+    private fun parseReturnStatement(returnToken: EulToken): ReturnStatement {
+        //val expression = this.expressionParser.readExpression(ExpressionBreaker.STATEMENT_EXPRESSION)
 
-        //val expression =
 
-        return ReturnStatement(null, 1, 2) //TODO
+        return ReturnStatement(null, returnToken.line, returnToken.column) //TODO
     }
 
 
-
     /// TOKEN READING
-    private fun getNextToken(skipNewLines: Boolean) : EulToken? {
+    override fun getNextToken(skipNewLines: Boolean): EulToken? {
         if (this.rolledBackToken != null) {
             val result = this.rolledBackToken
             this.rolledBackToken = null
@@ -63,7 +55,10 @@ class DefaultEulParser(reader: BufferedReader, private val logger: EulLogger, pr
         return this.tokenizer.getNextToken(skipNewLines)
     }
 
-    private fun rollBackToken(token: EulToken?) {
+    override fun rollBackToken(token: EulToken) {
+        if (this.rolledBackToken != null) {
+            throw ParserException(token.line, token.column, "Cannot roll back more than one token")
+        }
         this.rolledBackToken = token
     }
 }
