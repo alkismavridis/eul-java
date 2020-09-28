@@ -5,7 +5,7 @@ import eu.alkismavridis.euljava.core.EulLogger
 import eu.alkismavridis.euljava.core.ast.EulToken
 import eu.alkismavridis.euljava.core.ast.operators.EulCommentToken
 import eu.alkismavridis.euljava.core.ast.operators.SpecialCharacterToken
-import eu.alkismavridis.euljava.core.ast.operators.SpecialCharacterType
+import eu.alkismavridis.euljava.core.ast.operators.SpecialCharType
 import java.io.Reader
 
 
@@ -40,7 +40,7 @@ class EulTokenizer(
         if (nextNonWhite == '\u0000') {
             return null
         } else if (nextNonWhite == '\n') {
-            return SpecialCharacterToken(SpecialCharacterType.NEW_LINE, this.line - 1, -1)
+            return SpecialCharacterToken(SpecialCharType.NEW_LINE, this.line - 1, -1)
         } else if (CharMetadata.isWordStart(nextNonWhite)) {
             this.rollBackCharacter(nextNonWhite)
             return this.wordTokenizer.getNextWordToken(this.line, this.column)

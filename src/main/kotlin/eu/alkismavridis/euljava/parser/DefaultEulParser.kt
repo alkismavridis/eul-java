@@ -4,19 +4,21 @@ import eu.alkismavridis.euljava.core.CompileOptions
 import eu.alkismavridis.euljava.core.EulLogger
 import eu.alkismavridis.euljava.core.ast.EulToken
 import eu.alkismavridis.euljava.core.ast.keywords.KeywordType
-import eu.alkismavridis.euljava.core.ast.operators.SpecialCharacterType
+import eu.alkismavridis.euljava.core.ast.operators.SpecialCharType
 import eu.alkismavridis.euljava.core.ast.statements.ContinueStatement
 import eu.alkismavridis.euljava.core.ast.statements.EmptyStatement
 import eu.alkismavridis.euljava.core.ast.statements.EulStatement
 import eu.alkismavridis.euljava.core.ast.statements.ReturnStatement
+import eu.alkismavridis.euljava.parser.expressions.ExpressionBreaker
+import eu.alkismavridis.euljava.parser.expressions.ExpressionParser
 import eu.alkismavridis.euljava.parser.token.EulTokenizer
-import java.io.BufferedReader
+import java.io.Reader
 
-class DefaultEulParser(reader: BufferedReader, private val logger: EulLogger, private val options: CompileOptions) : TokenSource, EulParser {
+class DefaultEulParser(reader: Reader, private val logger: EulLogger, private val options: CompileOptions) : TokenSource, EulParser {
     private val tokenizer = EulTokenizer(reader, logger, options)
     private var rolledBackToken: EulToken? = null
 
-    //private val expressionParser = ExpressionParser(this)
+    private val expressionParser = ExpressionParser(this)
 
     override fun getNextStatement(): EulStatement? {
         val firstToken = this.getNextToken(true) ?: return null
@@ -27,7 +29,7 @@ class DefaultEulParser(reader: BufferedReader, private val logger: EulLogger, pr
         }
 
 
-        if (firstToken.getSpecialCharacterType() == SpecialCharacterType.SEMICOLON) {
+        if (firstToken.getSpecialCharType() == SpecialCharType.SEMICOLON) {
             return EmptyStatement(firstToken.line, firstToken.column)
         }
 
@@ -37,10 +39,9 @@ class DefaultEulParser(reader: BufferedReader, private val logger: EulLogger, pr
 
 
     private fun parseReturnStatement(returnToken: EulToken): ReturnStatement {
-        //val expression = this.expressionParser.readExpression(ExpressionBreaker.STATEMENT_EXPRESSION)
+        val expression = this.expressionParser.readExpression(ExpressionBreaker.STATEMENT_EXPRESSION, false)
 
-
-        return ReturnStatement(null, returnToken.line, returnToken.column) //TODO
+        return ReturnStatement(expression, returnToken.line, returnToken.column) //TODO
     }
 
 

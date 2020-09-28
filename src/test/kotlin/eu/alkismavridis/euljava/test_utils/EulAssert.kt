@@ -1,11 +1,14 @@
 package eu.alkismavridis.euljava.test_utils
 
 import eu.alkismavridis.euljava.core.ast.EulToken
+import eu.alkismavridis.euljava.core.ast.expressions.EulInfixExpression
+import eu.alkismavridis.euljava.core.ast.expressions.EulPrefixExpression
+import eu.alkismavridis.euljava.core.ast.expressions.EulSuffixExpression
 import eu.alkismavridis.euljava.core.ast.expressions.tokens.*
 import eu.alkismavridis.euljava.core.ast.keywords.KeywordToken
 import eu.alkismavridis.euljava.core.ast.keywords.KeywordType
 import eu.alkismavridis.euljava.core.ast.operators.SpecialCharacterToken
-import eu.alkismavridis.euljava.core.ast.operators.SpecialCharacterType
+import eu.alkismavridis.euljava.core.ast.operators.SpecialCharType
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Offset
 
@@ -41,7 +44,7 @@ class EulAssert {
             assertThat(asRef.column).isEqualTo(column)
         }
 
-        fun assertSpecialCharacter(token: EulToken?, text: SpecialCharacterType, line: Int, column: Int) {
+        fun assertSpecialCharacter(token: EulToken?, text: SpecialCharType, line: Int, column: Int) {
             assertThat(token).isNotNull().isInstanceOf(SpecialCharacterToken::class.java)
 
             val asOperator = token as SpecialCharacterToken
@@ -92,6 +95,35 @@ class EulAssert {
             val asBoolean = token as NullLiteral
             assertThat(asBoolean.line).isEqualTo(line)
             assertThat(asBoolean.column).isEqualTo(column)
+        }
+
+
+        /// EXPRESSIONS
+        fun assertPrefixExpression(token: EulToken?, line: Int, column: Int) : EulPrefixExpression {
+            assertThat(token).isNotNull().isInstanceOf(EulPrefixExpression::class.java)
+
+            val asPrefix = token as EulPrefixExpression
+            assertThat(asPrefix.line).isEqualTo(line)
+            assertThat(asPrefix.column).isEqualTo(column)
+            return asPrefix
+        }
+
+        fun assertSuffixExpression(token: EulToken?, line: Int, column: Int) : EulSuffixExpression {
+            assertThat(token).isNotNull().isInstanceOf(EulSuffixExpression::class.java)
+
+            val asSuffix = token as EulSuffixExpression
+            assertThat(asSuffix.line).isEqualTo(line)
+            assertThat(asSuffix.column).isEqualTo(column)
+            return asSuffix
+        }
+
+        fun assertInfixExpression(token: EulToken?, line: Int, column: Int) : EulInfixExpression {
+            assertThat(token).isNotNull().isInstanceOf(EulInfixExpression::class.java)
+
+            val asInfix = token as EulInfixExpression
+            assertThat(asInfix.line).isEqualTo(line)
+            assertThat(asInfix.column).isEqualTo(column)
+            return asInfix
         }
     }
 }
