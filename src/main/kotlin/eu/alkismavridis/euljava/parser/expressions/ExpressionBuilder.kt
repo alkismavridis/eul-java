@@ -3,6 +3,7 @@ package eu.alkismavridis.euljava.parser.expressions
 import eu.alkismavridis.euljava.core.ast.expressions.EulExpression
 import eu.alkismavridis.euljava.core.ast.expressions.EulInfixExpression
 import eu.alkismavridis.euljava.core.ast.expressions.EulOperationExpression
+import eu.alkismavridis.euljava.core.ast.expressions.EulPrefixExpression
 import eu.alkismavridis.euljava.core.ast.operators.SpecialCharType
 import eu.alkismavridis.euljava.core.ast.operators.SpecialCharacterToken
 import eu.alkismavridis.euljava.parser.ParserException
@@ -24,30 +25,31 @@ internal class ExpressionBuilder {
         if (exp is EulOperationExpression) this.head = exp
     }
 
-    fun addInfix(specialChar: SpecialCharacterToken, newExpression: EulExpression) {
+
+    /// INFIX INTEGRATION
+    fun addInfix(incomingOperator: SpecialCharacterToken, newExpression: EulExpression) {
         if (this.result == null) {
             throw ParserException(newExpression.line, newExpression.column, "Cannot integrate infix when result is null")
         }
 
-        val parentToAdjust = this.getParentToHostInfix(specialChar.getSpecialCharType())
+        val parentToAdjust = this.getParentToHostInfix(incomingOperator.getSpecialCharType())
 
         if (parentToAdjust == null) {
-            this.head = EulInfixExpression(this.result!!, specialChar, newExpression, null)
-            this.result = this.head
-        } else if (parentToAdjust is EulInfixExpression) {
-            val newInfix = EulInfixExpression(parentToAdjust.second, specialChar, newExpression, null)
-            parentToAdjust.replaceSecond(newInfix)
-            this.head = newInfix
+            val newInfix = EulInfixExpression(this.result!!, incomingOperator, newExpression, null)
+            this.result = newInfix
+            this.head = if (newExpression is EulOperationExpression) newExpression else newInfix
         } else {
-            throw IllegalArgumentException("Not yet implemented")
+            val newInfix = EulInfixExpression(parentToAdjust.getTarget(), incomingOperator, newExpression, null)
+            parentToAdjust.replaceTarget(newInfix)
+            this.head = if (newExpression is EulOperationExpression) newExpression else newInfix
         }
     }
 
     private fun getParentToHostInfix(incomingOperator: SpecialCharType): EulOperationExpression? {
         var currentNode = this.head
         while (currentNode != null) {
-            val currentNodeInfixPriority = currentNode.operator.getSpecialCharType().infixPriority
-            if (incomingOperator.infixPriority > currentNodeInfixPriority || (incomingOperator.infixPriority == currentNodeInfixPriority && incomingOperator.isInfixRtl)) {
+            val currentNodePrecedence = currentNode.getOperatorPrecedence()
+            if (incomingOperator.infixPriority > currentNodePrecedence || (incomingOperator.infixPriority == currentNodePrecedence && incomingOperator.isInfixRtl)) {
                 return currentNode
             } else {
                 currentNode = currentNode.parent

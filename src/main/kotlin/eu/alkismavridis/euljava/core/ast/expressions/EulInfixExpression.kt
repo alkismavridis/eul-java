@@ -16,8 +16,12 @@ class EulInfixExpression(
         if (second is EulOperationExpression) second.parent = this
     }
 
-    fun replaceSecond(newSecond: EulExpression) {
-        this.second = newSecond
+    override fun replaceTarget(newTarget: EulExpression) {
+        this.second = newTarget
         if (second is EulOperationExpression) (second as EulOperationExpression).parent = this
     }
+
+    override fun getOperatorPrecedence() = this.operator.type.infixPriority
+
+    override fun getTarget() = this.second
 }

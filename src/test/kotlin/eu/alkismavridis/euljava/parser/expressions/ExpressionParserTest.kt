@@ -23,6 +23,7 @@ internal class ExpressionParserTest {
     private val options = CompileOptions("")
 
 
+    /// SIMPLE TOKENS
     @Test
     fun shouldParseIntegerToken() {
         val source = this.createTokenSource("5")
@@ -59,17 +60,7 @@ internal class ExpressionParserTest {
     }
 
 
-
-    @Test
-    fun shouldParseSimplePrefixExpression() {
-        val source = this.createTokenSource("-x")
-        val parser = ExpressionParser(source)
-
-        val asPrefix = assertPrefixExpression(parser.readExpression(ExpressionBreaker.STATEMENT_EXPRESSION, false), 1, 1)
-        assertSpecialCharacter(asPrefix.operator, SpecialCharType.MINUS, 1, 1)
-        assertEulReference(asPrefix.target, "x", 1, 2)
-    }
-
+    /// INFIX EXPRESSIONS
     @Test
     fun shouldParseSimpleInfixExpression() {
         val source = this.createTokenSource("x + y")
@@ -178,6 +169,102 @@ internal class ExpressionParserTest {
         assertSpecialCharacter(exp7.operator, SpecialCharType.STAR, 1, 22)
         assertEulReference(exp7.second, "y", 1, 24)
     }
+
+    @Test
+    fun shouldHandleParenthesis() {
+        val source = this.createTokenSource("x * (y + z)")
+        val parser = ExpressionParser(source)
+
+        val exp1 = assertInfixExpression(parser.readExpression(ExpressionBreaker.STATEMENT_EXPRESSION, false), 1, 1)
+        assertEulReference(exp1.first, "x", 1, 1)
+        assertSpecialCharacter(exp1.operator, SpecialCharType.STAR, 1, 3)
+
+        val exp2 = assertInfixExpression(exp1.second, 1, 6)
+        assertEulReference(exp2.first, "y", 1, 6)
+        assertSpecialCharacter(exp2.operator, SpecialCharType.PLUS, 1, 8)
+        assertEulReference(exp2.second, "z", 1, 10)
+    }
+
+
+
+    /// PREFIX EXPRESSIONS
+    @Test
+    fun shouldParseSimplePrefixExpression() {
+        val source = this.createTokenSource("-x")
+        val parser = ExpressionParser(source)
+
+        val asPrefix = assertPrefixExpression(parser.readExpression(ExpressionBreaker.STATEMENT_EXPRESSION, false), 1, 1)
+        assertSpecialCharacter(asPrefix.operator, SpecialCharType.MINUS, 1, 1)
+        assertEulReference(asPrefix.getTarget(), "x", 1, 2)
+    }
+
+    @Test
+    fun shouldParseMultiplePrefixOperatorsAsRtlWithSamePrecedence() {
+        val source = this.createTokenSource("++-+x")
+        val parser = ExpressionParser(source)
+
+        val exp1 = assertPrefixExpression(parser.readExpression(ExpressionBreaker.STATEMENT_EXPRESSION, false), 1, 1)
+        assertSpecialCharacter(exp1.operator, SpecialCharType.DOUBLE_PLUS, 1, 1)
+
+        val exp2 = assertPrefixExpression(exp1.getTarget(), 1, 3)
+        assertSpecialCharacter(exp2.operator, SpecialCharType.MINUS, 1, 3)
+
+        val exp3 = assertPrefixExpression(exp2.getTarget(), 1, 4)
+        assertSpecialCharacter(exp3.operator, SpecialCharType.PLUS, 1, 4)
+        assertEulReference(exp3.getTarget(), "x", 1, 5)
+    }
+
+    @Test
+    fun shouldMixPrefixAndInfixOperators() {
+        val source = this.createTokenSource("-x + ++y.z-a * ++-x")
+        val parser = ExpressionParser(source)
+
+        val exp1 = assertInfixExpression(parser.readExpression(ExpressionBreaker.STATEMENT_EXPRESSION, false), 1, 1)
+        assertSpecialCharacter(exp1.operator, SpecialCharType.MINUS, 1, 11)
+
+        val exp2 = assertInfixExpression(exp1.first, 1, 1) // -x + ++y.z
+        assertSpecialCharacter(exp2.operator, SpecialCharType.PLUS, 1, 4)
+
+        val exp3 = assertInfixExpression(exp1.second, 1, 12) // a * ++-x
+        assertSpecialCharacter(exp3.operator, SpecialCharType.STAR, 1, 14)
+        assertEulReference(exp3.first, "a", 1, 12)
+
+        val exp4 = assertPrefixExpression(exp2.first, 1, 1) // -x
+        assertSpecialCharacter(exp4.operator, SpecialCharType.MINUS, 1, 1)
+        assertEulReference(exp4.getTarget(), "x", 1, 2)
+
+        val exp5 = assertPrefixExpression(exp2.second, 1, 6) // ++y.z
+        assertSpecialCharacter(exp5.operator, SpecialCharType.DOUBLE_PLUS, 1, 6)
+
+        val exp6 = assertInfixExpression(exp5.getTarget(), 1, 8) // y.z
+        assertEulReference(exp6.first, "y", 1, 8)
+        assertSpecialCharacter(exp6.operator, SpecialCharType.DOT, 1, 9)
+        assertEulReference(exp6.second, "z", 1, 10)
+
+        val exp7 = assertPrefixExpression(exp3.second, 1, 16) // ++-x
+        assertSpecialCharacter(exp7.operator, SpecialCharType.DOUBLE_PLUS, 1, 16)
+
+        val exp8 = assertPrefixExpression(exp7.getTarget(), 1, 18) // -x
+        assertSpecialCharacter(exp8.operator, SpecialCharType.MINUS, 1, 18)
+        assertEulReference(exp8.getTarget(), "x", 1, 19)
+   }
+
+    @Test
+    fun shouldHandlePrefixInParenthesis() {
+        val source = this.createTokenSource("++(-+x)")
+        val parser = ExpressionParser(source)
+
+        val exp1 = assertPrefixExpression(parser.readExpression(ExpressionBreaker.STATEMENT_EXPRESSION, false), 1, 1)
+        assertSpecialCharacter(exp1.operator, SpecialCharType.DOUBLE_PLUS, 1, 1)
+
+        val exp2 = assertPrefixExpression(exp1.getTarget(), 1, 4)
+        assertSpecialCharacter(exp2.operator, SpecialCharType.MINUS, 1, 4)
+
+        val exp3 = assertPrefixExpression(exp2.getTarget(), 1, 5)
+        assertSpecialCharacter(exp3.operator, SpecialCharType.PLUS, 1, 5)
+        assertEulReference(exp3.getTarget(), "x", 1, 6)
+    }
+
 
 
 
