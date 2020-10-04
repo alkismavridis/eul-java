@@ -12,6 +12,7 @@ import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertInfixExpres
 import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertIntegerLiteral
 import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertPrefixExpression
 import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertSpecialCharacter
+import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertSuffixExpression
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.junit.jupiter.api.Test
@@ -66,10 +67,10 @@ internal class ExpressionParserTest {
         val source = this.createTokenSource("x + y")
         val parser = ExpressionParser(source)
 
-        val asPrefix = assertInfixExpression(parser.readExpression(ExpressionBreaker.STATEMENT_EXPRESSION, false), 1, 1)
-        assertEulReference(asPrefix.first, "x", 1, 1)
-        assertSpecialCharacter(asPrefix.operator, SpecialCharType.PLUS, 1, 3)
-        assertEulReference(asPrefix.second, "y", 1, 5)
+        val asInfix = assertInfixExpression(parser.readExpression(ExpressionBreaker.STATEMENT_EXPRESSION, false), 1, 1)
+        assertEulReference(asInfix.first, "x", 1, 1)
+        assertSpecialCharacter(asInfix.operator, SpecialCharType.PLUS, 1, 3)
+        assertEulReference(asInfix.second, "y", 1, 5)
     }
 
     @Test
@@ -266,6 +267,101 @@ internal class ExpressionParserTest {
     }
 
 
+    /// SUFFIX EXPRESSIONS
+    @Test
+    fun shouldParseSimpleSuffixExpression() {
+        val source = this.createTokenSource("x++")
+        val parser = ExpressionParser(source)
+
+        val asSuffix = assertSuffixExpression(parser.readExpression(ExpressionBreaker.STATEMENT_EXPRESSION, false), 1, 1)
+        assertEulReference(asSuffix.getTarget(), "x", 1, 1)
+        assertSpecialCharacter(asSuffix.operator, SpecialCharType.DOUBLE_PLUS, 1, 2)
+    }
+
+    @Test
+    fun shouldParseMultipleSuffixOperatorsAsLtrWithSamePrecedence() {
+        val source = this.createTokenSource("x++--()++")
+        val parser = ExpressionParser(source)
+
+        val exp1 = assertSuffixExpression(parser.readExpression(ExpressionBreaker.STATEMENT_EXPRESSION, false), 1, 1)
+        assertSpecialCharacter(exp1.operator, SpecialCharType.DOUBLE_PLUS, 1, 8)
+
+        val exp2 = assertSuffixExpression(exp1.getTarget(), 1, 1)
+        assertSpecialCharacter(exp2.operator, SpecialCharType.PARENTHESIS_OPEN, 1, 6)
+
+        val exp3 = assertSuffixExpression(exp2.getTarget(), 1, 1)
+        assertSpecialCharacter(exp3.operator, SpecialCharType.DOUBLE_MINUS, 1, 4)
+
+        val exp4 = assertSuffixExpression(exp3.getTarget(), 1, 1)
+        assertSpecialCharacter(exp4.operator, SpecialCharType.DOUBLE_PLUS, 1, 2)
+        assertEulReference(exp4.getTarget(), "x", 1, 1)
+    }
+
+    @Test
+    fun shouldMixPrefixAndSuffixOperators() {
+        val source = this.createTokenSource("-x()")
+        val parser = ExpressionParser(source)
+
+        val exp1 = assertPrefixExpression(parser.readExpression(ExpressionBreaker.STATEMENT_EXPRESSION, false), 1, 1)
+        assertSpecialCharacter(exp1.operator, SpecialCharType.MINUS, 1, 1)
+
+        val exp2 = assertSuffixExpression(exp1.getTarget(), 1, 2)
+        assertSpecialCharacter(exp2.operator, SpecialCharType.PARENTHESIS_OPEN, 1, 3)
+        assertEulReference(exp2.getTarget(),"x", 1, 2)
+    }
+
+    @Test
+    fun shouldMixSuffixAndInfixOperators() {
+        val source = this.createTokenSource("x-- + y.z++-a * x()++")
+        val parser = ExpressionParser(source)
+
+        val exp1 = assertInfixExpression(parser.readExpression(ExpressionBreaker.STATEMENT_EXPRESSION, false), 1, 1)
+        assertSpecialCharacter(exp1.operator, SpecialCharType.MINUS, 1, 12)
+
+        val exp2 = assertInfixExpression(exp1.first, 1, 1) // x-- + y.z++
+        assertSpecialCharacter(exp2.operator, SpecialCharType.PLUS, 1, 5)
+
+        val exp3 = assertInfixExpression(exp1.second, 1, 13) // a * x()++
+        assertSpecialCharacter(exp3.operator, SpecialCharType.STAR, 1, 15)
+        assertEulReference(exp3.first, "a", 1, 13)
+
+        val exp4 = assertSuffixExpression(exp2.first, 1, 1) // x--
+        assertSpecialCharacter(exp4.operator, SpecialCharType.DOUBLE_MINUS, 1, 2)
+        assertEulReference(exp4.getTarget(), "x", 1, 1)
+
+        val exp5 = assertSuffixExpression(exp2.second, 1, 7) // y.z++
+        assertSpecialCharacter(exp5.operator, SpecialCharType.DOUBLE_PLUS, 1, 10)
+
+        val exp6 = assertInfixExpression(exp5.getTarget(), 1, 7) // y.z
+        assertEulReference(exp6.first, "y", 1, 7)
+        assertSpecialCharacter(exp6.operator, SpecialCharType.DOT, 1, 8)
+        assertEulReference(exp6.second, "z", 1, 9)
+
+        val exp7 = assertSuffixExpression(exp3.second, 1, 17) // x()++
+        assertSpecialCharacter(exp7.operator, SpecialCharType.DOUBLE_PLUS, 1, 20)
+
+        val exp8 = assertSuffixExpression(exp7.getTarget(), 1, 17) // x()
+        assertSpecialCharacter(exp8.operator, SpecialCharType.PARENTHESIS_OPEN, 1, 18)
+        assertEulReference(exp8.getTarget(), "x", 1, 17)
+    }
+
+    @Test
+    fun shouldHandleSuffixInParenthesis() {
+        val source = this.createTokenSource("(x--())++")
+        val parser = ExpressionParser(source)
+
+        val exp1 = assertSuffixExpression(parser.readExpression(ExpressionBreaker.STATEMENT_EXPRESSION, false), 1, 2)
+        assertSpecialCharacter(exp1.operator, SpecialCharType.DOUBLE_PLUS, 1, 8)
+
+        val exp2 = assertSuffixExpression(exp1.getTarget(), 1, 2)
+        assertSpecialCharacter(exp2.operator, SpecialCharType.PARENTHESIS_OPEN, 1, 5)
+
+        val exp3 = assertSuffixExpression(exp2.getTarget(), 1, 2)
+        assertSpecialCharacter(exp3.operator, SpecialCharType.DOUBLE_MINUS, 1, 3)
+        assertEulReference(exp3.getTarget(), "x", 1, 2)
+    }
+
+    // TODO test new line character handling
 
 
     /// UTILS

@@ -5,6 +5,7 @@ import eu.alkismavridis.euljava.core.ast.operators.SpecialCharacterToken
 class EulSuffixExpression(
         private var target: EulExpression,
         operator: SpecialCharacterToken,
+        val params: List<EulExpression>?,
         parent: EulOperationExpression?
 ) : EulOperationExpression(target.line, target.column, operator, parent) {
     init {
