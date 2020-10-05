@@ -9,8 +9,8 @@ enum class KeywordType {
     NULL,
 
     /// DEFINITIONS
-    VAR,
-    VAL,
+    LET,
+    CONST,
     FUN,
 
 

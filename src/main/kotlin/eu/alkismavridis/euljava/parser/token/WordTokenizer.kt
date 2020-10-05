@@ -42,8 +42,8 @@ class WordTokenizer(private val logger: EulLogger, private val source: Character
             "null" -> NullLiteral(line, column)
 
             // definitions
-            "var" -> KeywordToken(KeywordType.VAR, line, column)
-            "val" -> KeywordToken(KeywordType.VAL, line, column)
+            "let" -> KeywordToken(KeywordType.LET, line, column)
+            "const" -> KeywordToken(KeywordType.CONST, line, column)
             "fun" -> KeywordToken(KeywordType.FUN, line, column)
 
 

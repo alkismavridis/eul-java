@@ -1,9 +1,16 @@
 package eu.alkismavridis.euljava.core.ast.expressions.tokens
 
 import eu.alkismavridis.euljava.core.ast.expressions.EulExpression
+import eu.alkismavridis.euljava.core.types.NativeEulType
 
-class IntegerLiteral(val value: Long, size: Int, isSigned: Boolean, line: Int, column: Int) :
-    EulExpression(line, column) {
+class IntegerLiteral(
+        val value: Long,
+        size: Int,
+        isSigned: Boolean,
+        line: Int,
+        column: Int
+) : EulExpression(line, column) {
+    private var _type: NativeEulType? = null
     private val size: Int = if (isSigned) -size else size
 
 
@@ -15,4 +22,6 @@ class IntegerLiteral(val value: Long, size: Int, isSigned: Boolean, line: Int, c
     fun isSigned(): Boolean {
         return this.size < 0
     }
+
+    override fun getType() = this._type
 }

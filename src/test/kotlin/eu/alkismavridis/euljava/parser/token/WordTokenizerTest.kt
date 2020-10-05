@@ -171,7 +171,7 @@ internal class WordTokenizerTest {
     fun shouldRecognizeKeywords() {
         val tokenizer = this.createTokenizer(
             "true false null\n" +
-                    "var val fun\n" +
+                    "let const fun\n" +
                     "if else switch\n" +
                     "for while break continue\n" +
                     "return throw\n" +
@@ -182,9 +182,9 @@ internal class WordTokenizerTest {
         assertBooleanLiteral(tokenizer.getNextToken(true), false, 1, 6)
         assertNullLiteral(tokenizer.getNextToken(true), 1, 12)
 
-        assertKeyword(tokenizer.getNextToken(true), KeywordType.VAR, 2, 1)
-        assertKeyword(tokenizer.getNextToken(true), KeywordType.VAL, 2, 5)
-        assertKeyword(tokenizer.getNextToken(true), KeywordType.FUN, 2, 9)
+        assertKeyword(tokenizer.getNextToken(true), KeywordType.LET, 2, 1)
+        assertKeyword(tokenizer.getNextToken(true), KeywordType.CONST, 2, 5)
+        assertKeyword(tokenizer.getNextToken(true), KeywordType.FUN, 2, 11)
 
         assertKeyword(tokenizer.getNextToken(true), KeywordType.IF, 3, 1)
         assertKeyword(tokenizer.getNextToken(true), KeywordType.ELSE, 3, 4)

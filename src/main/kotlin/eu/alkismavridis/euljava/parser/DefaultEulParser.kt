@@ -5,10 +5,7 @@ import eu.alkismavridis.euljava.core.EulLogger
 import eu.alkismavridis.euljava.core.ast.EulToken
 import eu.alkismavridis.euljava.core.ast.keywords.KeywordType
 import eu.alkismavridis.euljava.core.ast.operators.SpecialCharType
-import eu.alkismavridis.euljava.core.ast.statements.ContinueStatement
-import eu.alkismavridis.euljava.core.ast.statements.EmptyStatement
-import eu.alkismavridis.euljava.core.ast.statements.EulStatement
-import eu.alkismavridis.euljava.core.ast.statements.ReturnStatement
+import eu.alkismavridis.euljava.core.ast.statements.*
 import eu.alkismavridis.euljava.parser.expressions.ExpressionBreaker
 import eu.alkismavridis.euljava.parser.expressions.ExpressionParser
 import eu.alkismavridis.euljava.parser.token.EulTokenizer
@@ -26,6 +23,10 @@ class DefaultEulParser(reader: Reader, private val logger: EulLogger, private va
         when (firstToken.getKeywordType()) {
             KeywordType.RETURN -> return this.parseReturnStatement(firstToken)
             KeywordType.CONTINUE -> return ContinueStatement(firstToken.line, firstToken.column)
+            KeywordType.BREAK -> return BreakStatement(firstToken.line, firstToken.column)
+
+//            KeywordType.CONST,
+//            KeywordType.LET -> return this.parseVariableDeclarationStatement(firstToken)
         }
 
 
@@ -33,16 +34,18 @@ class DefaultEulParser(reader: Reader, private val logger: EulLogger, private va
             return EmptyStatement(firstToken.line, firstToken.column)
         }
 
-        throw ParserException(firstToken.line, firstToken.column, "Unexpected token for statement start")
-
+        throw ParserException.of(firstToken, "Unexpected token for statement start")
     }
 
 
     private fun parseReturnStatement(returnToken: EulToken): ReturnStatement {
         val expression = this.expressionParser.readExpression(ExpressionBreaker.STATEMENT_EXPRESSION, false)
-
-        return ReturnStatement(expression, returnToken.line, returnToken.column) //TODO
+        return ReturnStatement(expression, returnToken.line, returnToken.column)
     }
+
+//    private fun parseVariableDeclarationStatement(firstToken: EulToken): VariableDeclarationStatement {
+//
+//    }
 
 
     /// TOKEN READING
