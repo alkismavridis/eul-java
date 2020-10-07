@@ -1,6 +1,9 @@
 package eu.alkismavridis.euljava.parser.expressions
 
 import eu.alkismavridis.euljava.core.ast.expressions.*
+import eu.alkismavridis.euljava.core.ast.expressions.operations.EulInfixExpression
+import eu.alkismavridis.euljava.core.ast.expressions.operations.EulOperationExpression
+import eu.alkismavridis.euljava.core.ast.expressions.operations.EulSuffixExpression
 import eu.alkismavridis.euljava.core.ast.operators.SpecialCharType
 import eu.alkismavridis.euljava.core.ast.operators.SpecialCharacterToken
 import eu.alkismavridis.euljava.parser.ParserException

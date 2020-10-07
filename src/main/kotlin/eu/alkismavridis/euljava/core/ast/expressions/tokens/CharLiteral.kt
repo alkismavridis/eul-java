@@ -9,8 +9,6 @@ class CharLiteral(
     line: Int,
     column: Int
 ) : EulExpression(line, column) {
-    override fun getType() = TYPE
-
     companion object {
         val TYPE = NativeEulType("Char")
     }

@@ -2,7 +2,7 @@ package eu.alkismavridis.euljava.parser.expressions
 
 import eu.alkismavridis.euljava.core.ast.EulToken
 import eu.alkismavridis.euljava.core.ast.expressions.EulExpression
-import eu.alkismavridis.euljava.core.ast.expressions.EulPrefixExpression
+import eu.alkismavridis.euljava.core.ast.expressions.operations.EulPrefixExpression
 import eu.alkismavridis.euljava.core.ast.operators.SpecialCharType
 import eu.alkismavridis.euljava.core.ast.operators.SpecialCharacterToken
 import eu.alkismavridis.euljava.parser.ParserException

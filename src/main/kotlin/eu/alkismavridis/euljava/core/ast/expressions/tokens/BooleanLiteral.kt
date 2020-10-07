@@ -5,8 +5,6 @@ import eu.alkismavridis.euljava.core.types.NativeEulType
 
 
 class BooleanLiteral(val value: Boolean, line: Int, column: Int) : EulExpression(line, column) {
-    override fun getType() = TYPE
-
     companion object {
         val TYPE = NativeEulType("Boolean")
     }

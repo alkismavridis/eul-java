@@ -1,9 +1,9 @@
 package eu.alkismavridis.euljava.test_utils
 
 import eu.alkismavridis.euljava.core.ast.EulToken
-import eu.alkismavridis.euljava.core.ast.expressions.EulInfixExpression
-import eu.alkismavridis.euljava.core.ast.expressions.EulPrefixExpression
-import eu.alkismavridis.euljava.core.ast.expressions.EulSuffixExpression
+import eu.alkismavridis.euljava.core.ast.expressions.operations.EulInfixExpression
+import eu.alkismavridis.euljava.core.ast.expressions.operations.EulPrefixExpression
+import eu.alkismavridis.euljava.core.ast.expressions.operations.EulSuffixExpression
 import eu.alkismavridis.euljava.core.ast.expressions.tokens.*
 import eu.alkismavridis.euljava.core.ast.keywords.KeywordToken
 import eu.alkismavridis.euljava.core.ast.keywords.KeywordType
