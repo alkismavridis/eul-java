@@ -42,7 +42,7 @@ class DefaultEulParser(reader: Reader, private val logger: EulLogger, private va
 
 
     private fun parseReturnStatement(returnToken: EulToken): ReturnStatement {
-        val expression = this.expressionParser.readExpression(ExpressionBreaker.STATEMENT_EXPRESSION, false)
+        val expression = this.expressionParser.readExpression(ExpressionBreaker.STATEMENT_EXPRESSION)
         return ReturnStatement(expression, returnToken.line, returnToken.column)
     }
 

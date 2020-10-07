@@ -48,7 +48,7 @@ class VariableDeclarationStatementParser(
                 return VariableDeclaration(
                         variableName.name,
                         type,
-                        this.expressionParser.requireExpression(ExpressionBreaker.COMMA_SEPARATED_EXPRESSION, true)
+                        this.expressionParser.requireExpression(ExpressionBreaker.COMMA_SEPARATED_EXPRESSION)
                 )
             }
 
@@ -56,7 +56,7 @@ class VariableDeclarationStatementParser(
                 return VariableDeclaration(
                         variableName.name,
                         null,
-                        this.expressionParser.requireExpression(ExpressionBreaker.COMMA_SEPARATED_EXPRESSION, true)
+                        this.expressionParser.requireExpression(ExpressionBreaker.COMMA_SEPARATED_EXPRESSION)
                 )
             }
 

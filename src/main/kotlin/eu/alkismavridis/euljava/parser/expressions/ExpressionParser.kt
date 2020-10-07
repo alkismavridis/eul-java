@@ -29,15 +29,15 @@ class ExpressionParser(private val source: TokenSource) {
      * If any opening token exists (such as parenthesis open), this method considers that it is already consumed.
      * Consumes closing token such as ) or ].
      * */
-    fun readExpression(breaker: ExpressionBreaker, forceSkipNewLines: Boolean): EulExpression? {
+    fun readExpression(breaker: ExpressionBreaker): EulExpression? {
         val builder =  ExpressionBuilder()
-        this.addLongExpressionToBuilder(builder, breaker, forceSkipNewLines)
+        this.addLongExpressionToBuilder(builder, breaker)
         return builder.getResult()
     }
 
-    fun requireExpression(breaker: ExpressionBreaker, forceSkipNewLines: Boolean): EulExpression {
+    fun requireExpression(breaker: ExpressionBreaker): EulExpression {
         val builder =  ExpressionBuilder()
-        val closingToken = this.addLongExpressionToBuilder(builder, breaker, forceSkipNewLines)
+        val closingToken = this.addLongExpressionToBuilder(builder, breaker)
         val result = builder.getResult()
 
         if (result == null) {
@@ -53,12 +53,12 @@ class ExpressionParser(private val source: TokenSource) {
      * Reads the longest possible expression.
      * Returns the last read token
      * */
-    private fun addLongExpressionToBuilder(builder: ExpressionBuilder, breaker: ExpressionBreaker, forceSkipNewLines: Boolean) : EulToken? {
-        val firstExpression = this.readShortExpression(breaker, forceSkipNewLines, false) ?: return this.lastReadToken
+    private fun addLongExpressionToBuilder(builder: ExpressionBuilder, breaker: ExpressionBreaker) : EulToken? {
+        val firstExpression = this.readShortExpression(breaker, breaker.newLinePolicy.ignoreFirst, false) ?: return this.lastReadToken
         builder.startWith(firstExpression)
 
         while (true) {
-            val tokenAfterExpression = this.getNextToken(breaker.ignoresNewLines || forceSkipNewLines) ?: return null
+            val tokenAfterExpression = this.getNextToken(breaker.newLinePolicy.ignoreAll) ?: return null
 
             val closingStatus = breaker.getClosingStatusFor(tokenAfterExpression)
             if (closingStatus == CloseStatus.END_OF_EXPRESSION) return tokenAfterExpression
@@ -101,7 +101,7 @@ class ExpressionParser(private val source: TokenSource) {
      * It handles prefix expressions and expressions starting with parenthesis-open
      * */
     private fun readShortExpression(breaker: ExpressionBreaker, forceSkipNewLines: Boolean, isRequired: Boolean): EulExpression? {
-        val firstToken = this.getNextToken(forceSkipNewLines || breaker.ignoresNewLines)
+        val firstToken = this.getNextToken(forceSkipNewLines || breaker.newLinePolicy.ignoreAll)
         val closeStatus = breaker.getClosingStatusFor(firstToken)
 
         if (firstToken == null || closeStatus == CloseStatus.END_OF_EXPRESSION) {
@@ -117,7 +117,7 @@ class ExpressionParser(private val source: TokenSource) {
                 throw ParserException.of(firstToken, "Expected expression but end of file war found")
             return EulPrefixExpression(firstToken as SpecialCharacterToken, expression, null)
         } else if (specialCharType == SpecialCharType.PARENTHESIS_OPEN) {
-            return this.requireExpression(ExpressionBreaker.PARENTHESIS, true)
+            return this.requireExpression(ExpressionBreaker.PARENTHESIS)
         }
 
         if (isRequired) throw this.createExpressionExpectedError(firstToken)
@@ -133,7 +133,7 @@ class ExpressionParser(private val source: TokenSource) {
         var result: MutableList<EulExpression>? = null
         loop@while(true) {
             val builder =  ExpressionBuilder()
-            val closingToken = this.addLongExpressionToBuilder(builder, breaker, true)!!
+            val closingToken = this.addLongExpressionToBuilder(builder, breaker)!!
 
             when(closingToken.getSpecialCharType()) {
                 SpecialCharType.COMMA -> {

@@ -10,9 +10,15 @@ enum class CloseStatus {
     END_IF_NO_INFIX_FOLLOWS
 }
 
-enum class ExpressionBreaker(val ignoresNewLines: Boolean) {
+enum class NewLinePolicy(val ignoreFirst: Boolean, val ignoreAll: Boolean) {
+    RESPECT(false, false),
+    IGNORE_FIRST(true, false),
+    IGNORE_ALL(true, true),
+}
+
+enum class ExpressionBreaker(val newLinePolicy: NewLinePolicy) {
     /** Ends only in \n and semicolon. Rejects commas and closing braces. Useful for return statements or similar.  */
-    STATEMENT_EXPRESSION(false) {
+    STATEMENT_EXPRESSION(NewLinePolicy.RESPECT) {
         override fun getClosingStatusFor(token: EulToken?): CloseStatus {
             if (token == null) return CloseStatus.END_OF_EXPRESSION
 
@@ -31,7 +37,7 @@ enum class ExpressionBreaker(val ignoresNewLines: Boolean) {
     },
 
     /** Ends only in \n and semicolon and comma. Rejects commas and closing braces. Useful for variable declarations or similar */
-    COMMA_SEPARATED_EXPRESSION(false) {
+    COMMA_SEPARATED_EXPRESSION(NewLinePolicy.IGNORE_FIRST) {
         override fun getClosingStatusFor(token: EulToken?): CloseStatus {
             if (token == null) return CloseStatus.END_OF_EXPRESSION
             return when (token.getSpecialCharType()) {
@@ -48,7 +54,7 @@ enum class ExpressionBreaker(val ignoresNewLines: Boolean) {
         }
     },
 
-    PARENTHESIS(true) {
+    PARENTHESIS(NewLinePolicy.IGNORE_ALL) {
         override fun getClosingStatusFor(token: EulToken?): CloseStatus {
             if (token == null) throw ParserException(-1, -1, "End of file reached waiting for closing closing ')'")
             return when (token.getSpecialCharType()) {
@@ -64,7 +70,7 @@ enum class ExpressionBreaker(val ignoresNewLines: Boolean) {
         }
     },
 
-    COMMA_SEPARATED_PARENTHESIS(true) {
+    COMMA_SEPARATED_PARENTHESIS(NewLinePolicy.IGNORE_ALL) {
         override fun getClosingStatusFor(token: EulToken?): CloseStatus {
             if (token == null) throw ParserException(-1, -1, "End of file reached waiting for closing closing ')'")
             return when (token.getSpecialCharType()) {
@@ -80,7 +86,7 @@ enum class ExpressionBreaker(val ignoresNewLines: Boolean) {
         }
     },
 
-    SQUARE_BRACE(true) {
+    SQUARE_BRACE(NewLinePolicy.IGNORE_ALL) {
         override fun getClosingStatusFor(token: EulToken?): CloseStatus {
             if (token == null) throw ParserException(-1, -1, "End of file reached waiting for closing closing ']'")
 
