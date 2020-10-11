@@ -23,8 +23,13 @@ class VariableDeclarationStatementParser(
                 break
             }
 
-            if (nextToken !is EulReference) throw ParserException.of(nextToken, "Expected variable name")
-            declarations.add(this.parseVariableDeclaration(nextToken))
+            if (nextToken is EulReference) {
+                declarations.add(this.parseVariableDeclaration(nextToken))
+            }
+            else {
+                this.source.rollBackToken(nextToken)
+                break
+            }
         }
 
         if (declarations.isEmpty()) {
@@ -46,7 +51,7 @@ class VariableDeclarationStatementParser(
                 }
 
                 return VariableDeclaration(
-                        variableName.name,
+                        variableName,
                         type,
                         this.expressionParser.requireExpression(ExpressionBreaker.COMMA_SEPARATED_EXPRESSION)
                 )
@@ -54,7 +59,7 @@ class VariableDeclarationStatementParser(
 
             SpecialCharType.EQUALS -> {
                 return VariableDeclaration(
-                        variableName.name,
+                        variableName,
                         null,
                         this.expressionParser.requireExpression(ExpressionBreaker.COMMA_SEPARATED_EXPRESSION)
                 )

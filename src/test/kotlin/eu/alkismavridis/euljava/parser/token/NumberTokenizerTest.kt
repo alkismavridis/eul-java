@@ -2,8 +2,10 @@ package eu.alkismavridis.euljava.parser.token
 
 import eu.alkismavridis.euljava.core.CompileOptions
 import eu.alkismavridis.euljava.core.EulLogger
+import eu.alkismavridis.euljava.core.ast.operators.SpecialCharType
 import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertFloatLiteral
 import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertIntegerLiteral
+import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertSpecialCharacter
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import java.io.StringReader
@@ -39,6 +41,32 @@ internal class NumberTokenizerTest {
         assertFloatLiteral(tokenizer.getNextToken(true), 56.0, 32, 1, 14)
         assertFloatLiteral(tokenizer.getNextToken(true), 0.0, 64, 1, 20)
     }
+
+    @Test
+    fun shouldStopOnFirstUnknownCharacter() {
+        val tokenizer = this.createTokenizer("1+123u+11s\n11f-33u32+123s16-4f32\n")
+        assertIntegerLiteral(tokenizer.getNextToken(false), 1, this.options.defaultIntSizeBits, true, 1, 1)
+        assertSpecialCharacter(tokenizer.getNextToken(false), SpecialCharType.PLUS, 1, 2)
+
+        assertIntegerLiteral(tokenizer.getNextToken(false), 123, this.options.defaultIntSizeBits, false, 1, 3)
+        assertSpecialCharacter(tokenizer.getNextToken(false), SpecialCharType.PLUS, 1, 7)
+
+        assertIntegerLiteral(tokenizer.getNextToken(false), 11, this.options.defaultIntSizeBits, true, 1, 8)
+        assertSpecialCharacter(tokenizer.getNextToken(false), SpecialCharType.NEW_LINE, 1, -1)
+
+        assertFloatLiteral(tokenizer.getNextToken(false), 11.0, this.options.defaultFloatSizeBits, 2, 1)
+        assertSpecialCharacter(tokenizer.getNextToken(false), SpecialCharType.MINUS, 2, 4)
+
+        assertIntegerLiteral(tokenizer.getNextToken(false), 33, 32, false, 2, 5)
+        assertSpecialCharacter(tokenizer.getNextToken(false), SpecialCharType.PLUS, 2, 10)
+
+        assertIntegerLiteral(tokenizer.getNextToken(false), 123, 16, true, 2, 11)
+        assertSpecialCharacter(tokenizer.getNextToken(false), SpecialCharType.MINUS, 2, 17)
+
+        assertFloatLiteral(tokenizer.getNextToken(false), 4.0, 32, 2, 18)
+        assertSpecialCharacter(tokenizer.getNextToken(false), SpecialCharType.NEW_LINE, 2, -1)
+    }
+
 
     @Test
     fun shouldReadFloatingPointNumbers() {

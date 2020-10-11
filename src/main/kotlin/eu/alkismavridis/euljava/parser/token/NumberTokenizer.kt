@@ -30,7 +30,6 @@ class NumberTokenizer(
                 this.source.rollBackCharacter(endingChar)
                 val integerValue = this.convertBufferToLong(startingLine, startingColumn)
                 return IntegerLiteral(integerValue, this.options.defaultIntSizeBits, true, startingLine, startingColumn)
-
             }
         }
     }
@@ -50,7 +49,8 @@ class NumberTokenizer(
 
     private fun parseSizePart(isSigned: Boolean, startingLine: Int, startingColumn: Int): IntegerLiteral {
         val integerValue = this.convertBufferToLong(startingLine, startingColumn)
-        this.addAllDecimalDigits()
+        val endingChar = this.addAllDecimalDigits()
+        this.source.rollBackCharacter(endingChar)
 
         val desiredSize = if (this.builder.isEmpty()) this.options.defaultIntSizeBits
         else this.convertBufferToLong(startingLine, startingColumn).toInt()
@@ -60,7 +60,8 @@ class NumberTokenizer(
 
     private fun parseSizePartForFloat(startingLine: Int, startingColumn: Int): FloatLiteral {
         val integerValue = this.convertBufferToDouble(startingLine, startingColumn)
-        this.addAllDecimalDigits()
+        val endingChar = this.addAllDecimalDigits()
+        this.source.rollBackCharacter(endingChar)
 
         val desiredSize = if (this.builder.isEmpty()) this.options.defaultFloatSizeBits
         else this.convertBufferToLong(startingLine, startingColumn).toInt()

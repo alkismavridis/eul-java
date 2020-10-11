@@ -11,10 +11,11 @@ import eu.alkismavridis.euljava.parser.expressions.ExpressionBreaker
 import eu.alkismavridis.euljava.parser.expressions.ExpressionParser
 import eu.alkismavridis.euljava.parser.token.EulTokenizer
 import java.io.Reader
+import java.util.*
 
 class DefaultEulParser(reader: Reader, private val logger: EulLogger, private val options: CompileOptions) : TokenSource, EulParser {
     private val tokenizer = EulTokenizer(reader, logger, options)
-    private var rolledBackToken: EulToken? = null
+    private var rolledBackTokens = Stack<EulToken>()
 
     private val expressionParser = ExpressionParser(this)
     private val typeParser = TypeParser(this)
@@ -49,30 +50,20 @@ class DefaultEulParser(reader: Reader, private val logger: EulLogger, private va
 
     /// TOKEN READING
     override fun getNextToken(skipNewLines: Boolean): EulToken? {
-        if (this.rolledBackToken != null) {
-            val result = this.rolledBackToken
-            this.rolledBackToken = null
-            return result
-        }
-
-        return this.tokenizer.getNextToken(skipNewLines)
+        return if (this.rolledBackTokens.isEmpty()) this.tokenizer.getNextToken(skipNewLines)
+        else this.rolledBackTokens.pop()
     }
 
     override fun requireNextToken(skipNewLines: Boolean, eofMessage: String): EulToken {
-        if (this.rolledBackToken != null) {
-            val result = this.rolledBackToken!!
-            this.rolledBackToken = null
-            return result
+        if (this.rolledBackTokens.isEmpty()) {
+            return this.tokenizer.getNextToken(skipNewLines) ?: throw ParserException.eof(eofMessage)
         }
 
-        return this.tokenizer.getNextToken(skipNewLines) ?: throw ParserException.eof(eofMessage)
+        return this.rolledBackTokens.pop()
     }
 
     override fun rollBackToken(token: EulToken) {
-        if (this.rolledBackToken != null) {
-            throw ParserException(token.line, token.column, "Cannot roll back more than one token")
-        }
-        this.rolledBackToken = token
+        this.rolledBackTokens.push(token)
     }
 
 

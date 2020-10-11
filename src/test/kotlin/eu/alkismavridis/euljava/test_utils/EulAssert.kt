@@ -9,6 +9,10 @@ import eu.alkismavridis.euljava.core.ast.keywords.KeywordToken
 import eu.alkismavridis.euljava.core.ast.keywords.KeywordType
 import eu.alkismavridis.euljava.core.ast.operators.SpecialCharacterToken
 import eu.alkismavridis.euljava.core.ast.operators.SpecialCharType
+import eu.alkismavridis.euljava.core.ast.statements.ReturnStatement
+import eu.alkismavridis.euljava.core.ast.statements.VariableDeclarationStatement
+import eu.alkismavridis.euljava.core.ast.types.TypeExpression
+import eu.alkismavridis.euljava.core.types.EulType
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Offset
 
@@ -124,6 +128,39 @@ class EulAssert {
             assertThat(asInfix.line).isEqualTo(line)
             assertThat(asInfix.column).isEqualTo(column)
             return asInfix
+        }
+
+
+        /// STATEMENTS
+        fun assertVarDeclarationStatement(token: EulToken?, declarationType: KeywordType, line: Int, column: Int) : VariableDeclarationStatement {
+            assertThat(token).isNotNull().isInstanceOf(VariableDeclarationStatement::class.java)
+
+            val casted = token as VariableDeclarationStatement
+            assertThat(casted.line).isEqualTo(line)
+            assertThat(casted.column).isEqualTo(column)
+            assertThat(casted.openingToken.getKeywordType()).isEqualTo(declarationType)
+            return casted
+        }
+
+        fun assertReturnStatement(token: EulToken?, line: Int, column: Int) : ReturnStatement {
+            assertThat(token).isNotNull().isInstanceOf(ReturnStatement::class.java)
+
+            val casted = token as ReturnStatement
+            assertThat(casted.line).isEqualTo(line)
+            assertThat(casted.column).isEqualTo(column)
+            return casted
+        }
+
+
+        /// TYPES
+        fun assertType(token: EulToken?, name: String, line: Int, column: Int) : TypeExpression {
+            assertThat(token).isNotNull().isInstanceOf(TypeExpression::class.java)
+
+            val casted = token as TypeExpression
+            assertThat(casted.line).isEqualTo(line)
+            assertThat(casted.column).isEqualTo(column)
+            assertThat(casted.name).isEqualTo(name)
+            return casted
         }
     }
 }

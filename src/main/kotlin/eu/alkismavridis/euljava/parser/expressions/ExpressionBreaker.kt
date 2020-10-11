@@ -37,7 +37,7 @@ enum class ExpressionBreaker(val newLinePolicy: NewLinePolicy) {
     },
 
     /** Ends only in \n and semicolon and comma. Rejects commas and closing braces. Useful for variable declarations or similar */
-    COMMA_SEPARATED_EXPRESSION(NewLinePolicy.IGNORE_FIRST) {
+    COMMA_SEPARATED_EXPRESSION(NewLinePolicy.RESPECT) {
         override fun getClosingStatusFor(token: EulToken?): CloseStatus {
             if (token == null) return CloseStatus.END_OF_EXPRESSION
             return when (token.getSpecialCharType()) {
