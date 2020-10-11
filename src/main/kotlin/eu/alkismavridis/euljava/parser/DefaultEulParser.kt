@@ -22,7 +22,7 @@ class DefaultEulParser(reader: Reader, private val logger: EulLogger, private va
     private val varDeclarationParser = VariableDeclarationStatementParser(this, this.expressionParser, this.typeParser)
 
     override fun getNextStatement(): EulStatement? {
-        val firstToken = this.getNextToken(true) ?: return null
+        val firstToken = this.getNextStatementStart() ?: return null
 
         when (firstToken.getKeywordType()) {
             KeywordType.RETURN -> return this.parseReturnStatement(firstToken)
@@ -33,12 +33,16 @@ class DefaultEulParser(reader: Reader, private val logger: EulLogger, private va
             KeywordType.LET -> return this.varDeclarationParser.parse(firstToken)
         }
 
-
-        if (firstToken.getSpecialCharType() == SpecialCharType.SEMICOLON) {
-            return this.getNextStatement()
-        }
-
         throw ParserException.of(firstToken, "Unexpected token for statement start")
+    }
+
+    private fun getNextStatementStart() : EulToken? {
+        while(true) {
+            val next = this.getNextToken(true) ?: return null
+            if (next.getSpecialCharType() != SpecialCharType.SEMICOLON) {
+                return next
+            }
+        }
     }
 
 

@@ -4,6 +4,7 @@ import eu.alkismavridis.euljava.core.CompileOptions
 import eu.alkismavridis.euljava.core.EulLogger
 import eu.alkismavridis.euljava.core.ast.keywords.KeywordType
 import eu.alkismavridis.euljava.core.ast.operators.SpecialCharType
+import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertBooleanLiteral
 import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertEulReference
 import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertInfixExpression
 import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertIntegerLiteral
@@ -21,7 +22,7 @@ internal class VariableDeclarationStatementParserTest {
     private val options = CompileOptions("")
 
 
-    /// SINGLE DECLARATIONS
+    /// FULL DECLARATIONS
     @Test
     fun shouldParseFullSingleConstEndingInEof() {
         val source = this.createParser("const x:Int = 5 + 6")
@@ -97,6 +98,124 @@ internal class VariableDeclarationStatementParserTest {
         assertType(statement.declarations[0].type, "Int", 1, 7)
 
         assertIntegerLiteral(statement.declarations[0].value, 22, 32, false, 1, 13)
+        assertReturnStatement(source.getNextStatement(), 2, 1)
+    }
+
+    @Test
+    fun shouldHandleMultipleDeclarations() {
+        val source = this.createParser("let x:Int = 22u, y:Boolean = true\nreturn")
+        val statement = assertVarDeclarationStatement(source.getNextStatement(), KeywordType.LET, 1, 1)
+        assertThat(statement.declarations.size).isEqualTo(2)
+
+        assertEulReference(statement.declarations[0].name, "x", 1, 5)
+        assertType(statement.declarations[0].type, "Int", 1, 7)
+        assertIntegerLiteral(statement.declarations[0].value, 22, 32, false, 1, 13)
+
+        assertEulReference(statement.declarations[1].name, "y", 1, 18)
+        assertType(statement.declarations[1].type, "Boolean", 1, 20)
+        assertBooleanLiteral(statement.declarations[1].value, true, 1, 30)
+
+        assertReturnStatement(source.getNextStatement(), 2, 1)
+    }
+
+
+    /// DECLARATIONS WITHOUT TYPE
+    @Test
+    fun shouldParseSingleTypelessConstEndingInEof() {
+        val source = this.createParser("const x = 5 + 6")
+        val statement = assertVarDeclarationStatement(source.getNextStatement(), KeywordType.CONST,1, 1)
+        assertThat(statement.declarations.size).isEqualTo(1)
+        assertEulReference(statement.declarations[0].name, "x", 1, 7)
+        assertThat(statement.declarations[0].type).isNull()
+
+
+        val value = assertInfixExpression(statement.declarations[0].value, 1, 11)
+        assertIntegerLiteral(value.first, 5, 32, true, 1, 11)
+        assertSpecialCharacter(value.operator, SpecialCharType.PLUS, 1, 13)
+        assertIntegerLiteral(value.second, 6, 32, true, 1, 15)
+
+        assertThat(source.getNextToken(false)).isNull()
+    }
+
+    @Test
+    fun shouldParseSingleTypelessLetEndingInEof() {
+        val source = this.createParser("let x = 5 + 6")
+        val statement = assertVarDeclarationStatement(source.getNextStatement(), KeywordType.LET,1, 1)
+        assertThat(statement.declarations.size).isEqualTo(1)
+        assertEulReference(statement.declarations[0].name, "x", 1, 5)
+        assertThat(statement.declarations[0].type).isNull()
+
+
+        val value = assertInfixExpression(statement.declarations[0].value, 1, 9)
+        assertIntegerLiteral(value.first, 5, 32, true, 1, 9)
+        assertSpecialCharacter(value.operator, SpecialCharType.PLUS, 1, 11)
+        assertIntegerLiteral(value.second, 6, 32, true, 1, 13)
+
+        assertThat(source.getNextToken(false)).isNull()
+    }
+
+    @Test
+    fun shouldParseSingleTypelessConstEndingInSemicolon() {
+        val source = this.createParser("const x = 22u;")
+        val statement = assertVarDeclarationStatement(source.getNextStatement(), KeywordType.CONST, 1, 1)
+        assertThat(statement.declarations.size).isEqualTo(1)
+        assertEulReference(statement.declarations[0].name, "x", 1, 7)
+        assertThat(statement.declarations[0].type).isNull()
+
+        assertIntegerLiteral(statement.declarations[0].value, 22, 32, false, 1, 11)
+        assertThat(source.getNextToken(false)).isNull()
+    }
+
+    @Test
+    fun shouldParseSingleTypelessLetEndingInSemicolon() {
+        val source = this.createParser("let x = 22u;")
+        val statement = assertVarDeclarationStatement(source.getNextStatement(), KeywordType.LET, 1, 1)
+        assertThat(statement.declarations.size).isEqualTo(1)
+        assertEulReference(statement.declarations[0].name, "x", 1, 5)
+        assertThat(statement.declarations[0].type).isNull()
+
+        assertIntegerLiteral(statement.declarations[0].value, 22, 32, false, 1, 9)
+        assertThat(source.getNextToken(false)).isNull()
+    }
+
+    @Test
+    fun shouldParseSingleTypelessConstEndingInNewLine() {
+        val source = this.createParser("const x = 22u\nreturn")
+        val statement = assertVarDeclarationStatement(source.getNextStatement(), KeywordType.CONST, 1, 1)
+        assertThat(statement.declarations.size).isEqualTo(1)
+        assertEulReference(statement.declarations[0].name, "x", 1, 7)
+        assertThat(statement.declarations[0].type).isNull()
+
+        assertIntegerLiteral(statement.declarations[0].value, 22, 32, false, 1, 11)
+        assertReturnStatement(source.getNextStatement(), 2, 1)
+    }
+
+    @Test
+    fun shouldParseSingleTypelessLetEndingInNewLine() {
+        val source = this.createParser("let x = 22u\nreturn")
+        val statement = assertVarDeclarationStatement(source.getNextStatement(), KeywordType.LET, 1, 1)
+        assertThat(statement.declarations.size).isEqualTo(1)
+        assertEulReference(statement.declarations[0].name, "x", 1, 5)
+        assertThat(statement.declarations[0].type).isNull()
+
+        assertIntegerLiteral(statement.declarations[0].value, 22, 32, false, 1, 9)
+        assertReturnStatement(source.getNextStatement(), 2, 1)
+    }
+
+    @Test
+    fun shouldHandleMultipleTypelessDeclarations() {
+        val source = this.createParser("let x = 22u, y = true\nreturn")
+        val statement = assertVarDeclarationStatement(source.getNextStatement(), KeywordType.LET, 1, 1)
+        assertThat(statement.declarations.size).isEqualTo(2)
+
+        assertEulReference(statement.declarations[0].name, "x", 1, 5)
+        assertThat(statement.declarations[0].type).isNull()
+        assertIntegerLiteral(statement.declarations[0].value, 22, 32, false, 1, 9)
+
+        assertEulReference(statement.declarations[1].name, "y", 1, 14)
+        assertThat(statement.declarations[1].type).isNull()
+        assertBooleanLiteral(statement.declarations[1].value, true, 1, 18)
+
         assertReturnStatement(source.getNextStatement(), 2, 1)
     }
 

@@ -1,5 +1,6 @@
 package eu.alkismavridis.euljava.parser
 
+import eu.alkismavridis.euljava.core.EulFatalErrorException
 import eu.alkismavridis.euljava.core.ast.EulToken
 import eu.alkismavridis.euljava.core.ast.expressions.tokens.EulReference
 import eu.alkismavridis.euljava.core.ast.operators.SpecialCharType
@@ -15,32 +16,29 @@ class VariableDeclarationStatementParser(
 ) {
     fun parse(openingToken: EulToken): VariableDeclarationStatement {
         val declarations = mutableListOf<VariableDeclaration>()
-        while(true) {
-            val nextToken = this.source.getNextToken(false) ?: break
+        loop@while(true) {
+            declarations.add(this.parseVariableDeclaration())
+            val closingToken = this.source.getNextToken(false) ?: break
 
-            val specialTokenType = nextToken.getSpecialCharType()
-            if (specialTokenType == SpecialCharType.NEW_LINE || specialTokenType == SpecialCharType.SEMICOLON) {
-                break
-            }
+            when(closingToken.getSpecialCharType()) {
+                SpecialCharType.NEW_LINE,
+                SpecialCharType.SEMICOLON -> break@loop
 
-            if (nextToken is EulReference) {
-                declarations.add(this.parseVariableDeclaration(nextToken))
+                SpecialCharType.COMMA -> continue@loop
+                else -> throw ParserException.of(closingToken, "Expected New line, semicolon or comma")
             }
-            else {
-                this.source.rollBackToken(nextToken)
-                break
-            }
-        }
-
-        if (declarations.isEmpty()) {
-            throw ParserException.of(openingToken,"Variable declaration statement should have at least one declaration")
         }
 
         return VariableDeclarationStatement(openingToken, declarations)
     }
 
-    private fun parseVariableDeclaration(variableName: EulReference): VariableDeclaration {
-        val tokenAfterName = this.source.requireNextToken(false, "Expected : or = but end of file was found ")
+    private fun parseVariableDeclaration(): VariableDeclaration {
+        val variableName = this.source.requireNextToken(false, "Expected variable name, but end of file was found")
+        if (variableName !is EulReference) {
+            throw ParserException.of(variableName, "Expected variable name")
+        }
+
+        val tokenAfterName = this.source.requireNextToken(false, "Expected : or = but end of file was found")
         when(tokenAfterName.getSpecialCharType()) {
             SpecialCharType.COLON -> {
                 val type = this.typeParser.requireType()

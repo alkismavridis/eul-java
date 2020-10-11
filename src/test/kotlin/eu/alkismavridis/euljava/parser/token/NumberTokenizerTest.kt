@@ -70,12 +70,13 @@ internal class NumberTokenizerTest {
 
     @Test
     fun shouldReadFloatingPointNumbers() {
-        val tokenizer = this.createTokenizer("123. 12.56 24.f 43.5f 843.f32 37.67f32")
+        val tokenizer = this.createTokenizer("123. 12.56 24.f 43.5f 843.f32+37.67f32")
         assertFloatLiteral(tokenizer.getNextToken(true), 123.0, this.options.defaultFloatSizeBits, 1, 1)
         assertFloatLiteral(tokenizer.getNextToken(true), 12.56, this.options.defaultFloatSizeBits, 1, 6)
         assertFloatLiteral(tokenizer.getNextToken(true), 24.0, this.options.defaultFloatSizeBits, 1, 12)
         assertFloatLiteral(tokenizer.getNextToken(true), 43.5, this.options.defaultFloatSizeBits, 1, 17)
         assertFloatLiteral(tokenizer.getNextToken(true), 843.0, 32, 1, 23)
+        assertSpecialCharacter(tokenizer.getNextToken(false), SpecialCharType.PLUS, 1, 30)
         assertFloatLiteral(tokenizer.getNextToken(true), 37.67, 32, 1, 31)
     }
 
