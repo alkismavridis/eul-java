@@ -7,7 +7,7 @@ import eu.alkismavridis.euljava.core.ast.expressions.tokens.EulReference
 import eu.alkismavridis.euljava.core.ast.keywords.KeywordType
 import eu.alkismavridis.euljava.core.ast.operators.SpecialCharType
 import eu.alkismavridis.euljava.core.ast.statements.*
-import eu.alkismavridis.euljava.parser.expressions.ExpressionEndPolicy
+import eu.alkismavridis.euljava.parser.expressions.NewLinePolicy
 import eu.alkismavridis.euljava.parser.expressions.ExpressionParser
 import eu.alkismavridis.euljava.parser.token.EulTokenizer
 import java.io.Reader
@@ -45,9 +45,8 @@ class DefaultEulParser(reader: Reader, private val logger: EulLogger, private va
         }
     }
 
-
     private fun parseReturnStatement(returnToken: EulToken): ReturnStatement {
-        val expression = this.expressionParser.readExpression(ExpressionEndPolicy.STATEMENT_EXPRESSION)
+        val expression = this.expressionParser.readExpression(NewLinePolicy.RESPECT)
         return ReturnStatement(expression, returnToken.line, returnToken.column)
     }
 

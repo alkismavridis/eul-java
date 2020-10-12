@@ -30,7 +30,7 @@ internal class ExpressionParserTest {
         val source = this.createTokenSource("5")
         val parser = ExpressionParser(source)
 
-        assertIntegerLiteral(parser.readExpression(ExpressionEndPolicy.STATEMENT_EXPRESSION), 5, 32, true, 1, 1)
+        assertIntegerLiteral(parser.readExpression(NewLinePolicy.RESPECT), 5, 32, true, 1, 1)
         assertThat(source.getNextToken(false)).isNull()
     }
 
@@ -39,7 +39,7 @@ internal class ExpressionParserTest {
         val source = this.createTokenSource("true")
         val parser = ExpressionParser(source)
 
-        assertBooleanLiteral(parser.readExpression(ExpressionEndPolicy.STATEMENT_EXPRESSION), true, 1, 1)
+        assertBooleanLiteral(parser.readExpression(NewLinePolicy.RESPECT), true, 1, 1)
         assertThat(source.getNextToken(false)).isNull()
     }
 
@@ -49,7 +49,7 @@ internal class ExpressionParserTest {
         val parser = ExpressionParser(source)
 
         assertThatExceptionOfType(ParserException::class.java)
-                .isThrownBy { parser.requireExpression(ExpressionEndPolicy.STATEMENT_EXPRESSION) }
+                .isThrownBy { parser.requireExpression(NewLinePolicy.RESPECT) }
     }
 
     @Test
@@ -57,7 +57,7 @@ internal class ExpressionParserTest {
         val source = this.createTokenSource("")
         val parser = ExpressionParser(source)
 
-        assertThat(parser.readExpression(ExpressionEndPolicy.STATEMENT_EXPRESSION)).isNull()
+        assertThat(parser.readExpression(NewLinePolicy.RESPECT)).isNull()
     }
 
 
@@ -67,7 +67,7 @@ internal class ExpressionParserTest {
         val source = this.createTokenSource("x + y")
         val parser = ExpressionParser(source)
 
-        val asInfix = assertInfixExpression(parser.readExpression(ExpressionEndPolicy.STATEMENT_EXPRESSION), 1, 1)
+        val asInfix = assertInfixExpression(parser.readExpression(NewLinePolicy.RESPECT), 1, 1)
         assertEulReference(asInfix.first, "x", 1, 1)
         assertSpecialCharacter(asInfix.operator, SpecialCharType.PLUS, 1, 3)
         assertEulReference(asInfix.second, "y", 1, 5)
@@ -78,7 +78,7 @@ internal class ExpressionParserTest {
         val source = this.createTokenSource("x + y + z")
         val parser = ExpressionParser(source)
 
-        val topLevelInfix = assertInfixExpression(parser.readExpression(ExpressionEndPolicy.STATEMENT_EXPRESSION), 1, 1)
+        val topLevelInfix = assertInfixExpression(parser.readExpression(NewLinePolicy.RESPECT), 1, 1)
         val nestedInfix = assertInfixExpression(topLevelInfix.first, 1, 1)
         assertEulReference(nestedInfix.first, "x", 1, 1)
         assertSpecialCharacter(nestedInfix.operator, SpecialCharType.PLUS, 1, 3)
@@ -93,7 +93,7 @@ internal class ExpressionParserTest {
         val source = this.createTokenSource("x = y = z")
         val parser = ExpressionParser(source)
 
-        val topLevelInfix = assertInfixExpression(parser.readExpression(ExpressionEndPolicy.STATEMENT_EXPRESSION), 1, 1)
+        val topLevelInfix = assertInfixExpression(parser.readExpression(NewLinePolicy.RESPECT), 1, 1)
 
         assertEulReference(topLevelInfix.first, "x", 1, 1)
         assertSpecialCharacter(topLevelInfix.operator, SpecialCharType.EQUALS, 1, 3)
@@ -109,7 +109,7 @@ internal class ExpressionParserTest {
         val source = this.createTokenSource("x * y + z")
         val parser = ExpressionParser(source)
 
-        val topLevelInfix = assertInfixExpression(parser.readExpression(ExpressionEndPolicy.STATEMENT_EXPRESSION), 1, 1)
+        val topLevelInfix = assertInfixExpression(parser.readExpression(NewLinePolicy.RESPECT), 1, 1)
         val nestedInfix = assertInfixExpression(topLevelInfix.first, 1, 1)
         assertEulReference(nestedInfix.first, "x", 1, 1)
         assertSpecialCharacter(nestedInfix.operator, SpecialCharType.STAR, 1, 3)
@@ -124,7 +124,7 @@ internal class ExpressionParserTest {
         val source = this.createTokenSource("x + y * z")
         val parser = ExpressionParser(source)
 
-        val topLevelInfix = assertInfixExpression(parser.readExpression(ExpressionEndPolicy.STATEMENT_EXPRESSION), 1, 1)
+        val topLevelInfix = assertInfixExpression(parser.readExpression(NewLinePolicy.RESPECT), 1, 1)
 
         assertEulReference(topLevelInfix.first, "x", 1, 1)
         assertSpecialCharacter(topLevelInfix.operator, SpecialCharType.PLUS, 1, 3)
@@ -140,7 +140,7 @@ internal class ExpressionParserTest {
         val source = this.createTokenSource("f = g = h && i.a + b * y / d")
         val parser = ExpressionParser(source)
 
-        val topLevelInfix = assertInfixExpression(parser.readExpression(ExpressionEndPolicy.STATEMENT_EXPRESSION), 1, 1)
+        val topLevelInfix = assertInfixExpression(parser.readExpression(NewLinePolicy.RESPECT), 1, 1)
 
         assertEulReference(topLevelInfix.first, "f", 1, 1)
         assertSpecialCharacter(topLevelInfix.operator, SpecialCharType.EQUALS, 1, 3)
@@ -176,7 +176,7 @@ internal class ExpressionParserTest {
         val source = this.createTokenSource("x * (y + z)")
         val parser = ExpressionParser(source)
 
-        val exp1 = assertInfixExpression(parser.readExpression(ExpressionEndPolicy.STATEMENT_EXPRESSION), 1, 1)
+        val exp1 = assertInfixExpression(parser.readExpression(NewLinePolicy.RESPECT), 1, 1)
         assertEulReference(exp1.first, "x", 1, 1)
         assertSpecialCharacter(exp1.operator, SpecialCharType.STAR, 1, 3)
 
@@ -194,7 +194,7 @@ internal class ExpressionParserTest {
         val source = this.createTokenSource("-x")
         val parser = ExpressionParser(source)
 
-        val asPrefix = assertPrefixExpression(parser.readExpression(ExpressionEndPolicy.STATEMENT_EXPRESSION), 1, 1)
+        val asPrefix = assertPrefixExpression(parser.readExpression(NewLinePolicy.RESPECT), 1, 1)
         assertSpecialCharacter(asPrefix.operator, SpecialCharType.MINUS, 1, 1)
         assertEulReference(asPrefix.getTarget(), "x", 1, 2)
     }
@@ -204,7 +204,7 @@ internal class ExpressionParserTest {
         val source = this.createTokenSource("++-+x")
         val parser = ExpressionParser(source)
 
-        val exp1 = assertPrefixExpression(parser.readExpression(ExpressionEndPolicy.STATEMENT_EXPRESSION), 1, 1)
+        val exp1 = assertPrefixExpression(parser.readExpression(NewLinePolicy.RESPECT), 1, 1)
         assertSpecialCharacter(exp1.operator, SpecialCharType.DOUBLE_PLUS, 1, 1)
 
         val exp2 = assertPrefixExpression(exp1.getTarget(), 1, 3)
@@ -220,7 +220,7 @@ internal class ExpressionParserTest {
         val source = this.createTokenSource("-x + ++y.z-a * ++-x")
         val parser = ExpressionParser(source)
 
-        val exp1 = assertInfixExpression(parser.readExpression(ExpressionEndPolicy.STATEMENT_EXPRESSION), 1, 1)
+        val exp1 = assertInfixExpression(parser.readExpression(NewLinePolicy.RESPECT), 1, 1)
         assertSpecialCharacter(exp1.operator, SpecialCharType.MINUS, 1, 11)
 
         val exp2 = assertInfixExpression(exp1.first, 1, 1) // -x + ++y.z
@@ -255,7 +255,7 @@ internal class ExpressionParserTest {
         val source = this.createTokenSource("++(-+x)")
         val parser = ExpressionParser(source)
 
-        val exp1 = assertPrefixExpression(parser.readExpression(ExpressionEndPolicy.STATEMENT_EXPRESSION), 1, 1)
+        val exp1 = assertPrefixExpression(parser.readExpression(NewLinePolicy.RESPECT), 1, 1)
         assertSpecialCharacter(exp1.operator, SpecialCharType.DOUBLE_PLUS, 1, 1)
 
         val exp2 = assertPrefixExpression(exp1.getTarget(), 1, 4)
@@ -273,7 +273,7 @@ internal class ExpressionParserTest {
         val source = this.createTokenSource("x++")
         val parser = ExpressionParser(source)
 
-        val asSuffix = assertSuffixExpression(parser.readExpression(ExpressionEndPolicy.STATEMENT_EXPRESSION), 1, 1)
+        val asSuffix = assertSuffixExpression(parser.readExpression(NewLinePolicy.RESPECT), 1, 1)
         assertEulReference(asSuffix.getTarget(), "x", 1, 1)
         assertSpecialCharacter(asSuffix.operator, SpecialCharType.DOUBLE_PLUS, 1, 2)
     }
@@ -283,7 +283,7 @@ internal class ExpressionParserTest {
         val source = this.createTokenSource("x++--()++")
         val parser = ExpressionParser(source)
 
-        val exp1 = assertSuffixExpression(parser.readExpression(ExpressionEndPolicy.STATEMENT_EXPRESSION), 1, 1)
+        val exp1 = assertSuffixExpression(parser.readExpression(NewLinePolicy.RESPECT), 1, 1)
         assertSpecialCharacter(exp1.operator, SpecialCharType.DOUBLE_PLUS, 1, 8)
 
         val exp2 = assertSuffixExpression(exp1.getTarget(), 1, 1)
@@ -302,7 +302,7 @@ internal class ExpressionParserTest {
         val source = this.createTokenSource("-x()")
         val parser = ExpressionParser(source)
 
-        val exp1 = assertPrefixExpression(parser.readExpression(ExpressionEndPolicy.STATEMENT_EXPRESSION), 1, 1)
+        val exp1 = assertPrefixExpression(parser.readExpression(NewLinePolicy.RESPECT), 1, 1)
         assertSpecialCharacter(exp1.operator, SpecialCharType.MINUS, 1, 1)
 
         val exp2 = assertSuffixExpression(exp1.getTarget(), 1, 2)
@@ -315,7 +315,7 @@ internal class ExpressionParserTest {
         val source = this.createTokenSource("x-- + y.z++-a * x()++")
         val parser = ExpressionParser(source)
 
-        val exp1 = assertInfixExpression(parser.readExpression(ExpressionEndPolicy.STATEMENT_EXPRESSION), 1, 1)
+        val exp1 = assertInfixExpression(parser.readExpression(NewLinePolicy.RESPECT), 1, 1)
         assertSpecialCharacter(exp1.operator, SpecialCharType.MINUS, 1, 12)
 
         val exp2 = assertInfixExpression(exp1.first, 1, 1) // x-- + y.z++
@@ -350,7 +350,7 @@ internal class ExpressionParserTest {
         val source = this.createTokenSource("(x--())++")
         val parser = ExpressionParser(source)
 
-        val exp1 = assertSuffixExpression(parser.readExpression(ExpressionEndPolicy.STATEMENT_EXPRESSION), 1, 2)
+        val exp1 = assertSuffixExpression(parser.readExpression(NewLinePolicy.RESPECT), 1, 2)
         assertSpecialCharacter(exp1.operator, SpecialCharType.DOUBLE_PLUS, 1, 8)
 
         val exp2 = assertSuffixExpression(exp1.getTarget(), 1, 2)

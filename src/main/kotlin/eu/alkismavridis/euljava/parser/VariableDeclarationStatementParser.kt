@@ -1,12 +1,11 @@
 package eu.alkismavridis.euljava.parser
 
-import eu.alkismavridis.euljava.core.EulFatalErrorException
 import eu.alkismavridis.euljava.core.ast.EulToken
 import eu.alkismavridis.euljava.core.ast.expressions.tokens.EulReference
 import eu.alkismavridis.euljava.core.ast.operators.SpecialCharType
 import eu.alkismavridis.euljava.core.ast.statements.VariableDeclaration
 import eu.alkismavridis.euljava.core.ast.statements.VariableDeclarationStatement
-import eu.alkismavridis.euljava.parser.expressions.ExpressionEndPolicy
+import eu.alkismavridis.euljava.parser.expressions.NewLinePolicy
 import eu.alkismavridis.euljava.parser.expressions.ExpressionParser
 
 class VariableDeclarationStatementParser(
@@ -51,7 +50,7 @@ class VariableDeclarationStatementParser(
                 return VariableDeclaration(
                         variableName,
                         type,
-                        this.expressionParser.requireExpression(ExpressionEndPolicy.COMMA_SEPARATED_EXPRESSION)
+                        this.expressionParser.requireExpression(NewLinePolicy.RESPECT)
                 )
             }
 
@@ -59,7 +58,7 @@ class VariableDeclarationStatementParser(
                 return VariableDeclaration(
                         variableName,
                         null,
-                        this.expressionParser.requireExpression(ExpressionEndPolicy.COMMA_SEPARATED_EXPRESSION)
+                        this.expressionParser.requireExpression(NewLinePolicy.RESPECT)
                 )
             }
 
