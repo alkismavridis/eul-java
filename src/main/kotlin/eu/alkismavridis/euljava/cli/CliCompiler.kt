@@ -4,7 +4,8 @@ import eu.alkismavridis.euljava.analyse.FileAnalyser
 import eu.alkismavridis.euljava.core.CompileOptions
 import eu.alkismavridis.euljava.core.ast.statements.EulStatement
 import eu.alkismavridis.euljava.emitter.DoNothingEmitter
-import eu.alkismavridis.euljava.parser.DefaultEulParser
+import eu.alkismavridis.euljava.parser.EulStatementParser
+import eu.alkismavridis.euljava.parser.StatementLevel
 import java.lang.Exception
 import java.lang.IllegalArgumentException
 import java.nio.file.AccessDeniedException
@@ -37,7 +38,7 @@ class CliCompiler {
         val statements = mutableListOf<EulStatement>()
         while(true) {
             val parser = this.createParser(options)
-            val nextStatement = parser.getNextStatement() ?: break
+            val nextStatement = parser.getNextStatement(StatementLevel.TOP_LEVEL) ?: break
             statements.add(nextStatement)
         }
         if (this.logger.hasErrors) return
@@ -50,7 +51,7 @@ class CliCompiler {
     }
 
 
-    private fun createParser(options: CompileOptions) : DefaultEulParser {
+    private fun createParser(options: CompileOptions) : EulStatementParser {
         val path = Paths.get(options.entryPoint)
         if (!Files.exists(path)) {
             throw IllegalArgumentException("${options.entryPoint}: File not found.")
@@ -62,6 +63,6 @@ class CliCompiler {
         }
 
         val reader = Files.newBufferedReader(path)
-        return DefaultEulParser(reader, this.logger, options)
+        return EulStatementParser(reader, this.logger, options)
     }
 }

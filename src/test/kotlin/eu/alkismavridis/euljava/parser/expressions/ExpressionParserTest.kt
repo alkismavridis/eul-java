@@ -3,7 +3,6 @@ package eu.alkismavridis.euljava.parser.expressions
 import eu.alkismavridis.euljava.core.CompileOptions
 import eu.alkismavridis.euljava.core.EulLogger
 import eu.alkismavridis.euljava.core.ast.operators.SpecialCharType
-import eu.alkismavridis.euljava.parser.DefaultEulParser
 import eu.alkismavridis.euljava.parser.ParserException
 import eu.alkismavridis.euljava.parser.TokenSource
 import eu.alkismavridis.euljava.test_utils.EulAssert.Companion.assertBooleanLiteral
@@ -366,6 +365,6 @@ internal class ExpressionParserTest {
 
     /// UTILS
     private fun createTokenSource(code: String) : TokenSource {
-        return DefaultEulParser(StringReader(code), this.logger, this.options)
+        return TokenSource(StringReader(code), this.logger, this.options)
     }
 }

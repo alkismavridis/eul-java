@@ -1,10 +1,13 @@
-package eu.alkismavridis.euljava.parser
+package eu.alkismavridis.euljava.parser.statements
 
 import eu.alkismavridis.euljava.core.ast.EulToken
 import eu.alkismavridis.euljava.core.ast.expressions.tokens.EulReference
 import eu.alkismavridis.euljava.core.ast.operators.SpecialCharType
 import eu.alkismavridis.euljava.core.ast.statements.VariableDeclaration
 import eu.alkismavridis.euljava.core.ast.statements.VariableDeclarationStatement
+import eu.alkismavridis.euljava.parser.ParserException
+import eu.alkismavridis.euljava.parser.TokenSource
+import eu.alkismavridis.euljava.parser.TypeParser
 import eu.alkismavridis.euljava.parser.expressions.NewLinePolicy
 import eu.alkismavridis.euljava.parser.expressions.ExpressionParser
 

@@ -25,7 +25,7 @@ class ExpressionParser(private val source: TokenSource) {
      * Reads an expression from its start.
      * The resulting expression will have null parent.
      * If any opening token exists (such as parenthesis open), this method considers that it is already consumed.
-     * Consumes closing token such as ) or ].
+     * Does NOT Consumes closing token such as ) or ], if and only if the corresponding opening token was also read during this method call.
      * */
     fun readExpression(endPolicy: NewLinePolicy): EulExpression? {
         val builder = ExpressionBuilder()
@@ -62,12 +62,7 @@ class ExpressionParser(private val source: TokenSource) {
 
             when {
                 specialCharType.isSuffix() -> this.integrateSuffix(tokenAfterExpression, builder)
-
-                specialCharType.isInfix() -> {
-                    val nextShortExpression = this.readShortExpression(newLinePolicy, true, true)
-                            ?: throw ParserException.of(tokenAfterExpression, "Expected expression but end of file was found")
-                    builder.addInfix(tokenAfterExpression as SpecialCharacterToken, nextShortExpression)
-                }
+                specialCharType.isInfix() -> this.integrateInfix(tokenAfterExpression as SpecialCharacterToken, builder, newLinePolicy)
 
                 specialCharType == SpecialCharType.NEW_LINE -> {
                     val shouldContinue = this.handleNewLineCharacterAfterExpression(tokenAfterExpression, builder, newLinePolicy)
@@ -183,6 +178,12 @@ class ExpressionParser(private val source: TokenSource) {
                 builder.addSuffix(tokenAfterExpression as SpecialCharacterToken, null)
             }
         }
+    }
+
+    private fun integrateInfix(infixOperator:SpecialCharacterToken, builder: ExpressionBuilder, newLinePolicy: NewLinePolicy) {
+        val nextShortExpression = this.readShortExpression(newLinePolicy, true, true)
+                ?: throw ParserException.of(infixOperator, "Expected expression but end of file was found")
+        builder.addInfix(infixOperator, nextShortExpression)
     }
 }
 
