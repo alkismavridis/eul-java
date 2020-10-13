@@ -18,8 +18,7 @@ enum class StatementLevel {
 }
 
 class EulStatementParser(reader: Reader, private val logger: EulLogger, private val options: CompileOptions) {
-    internal val source = TokenSource(reader, logger, options)
-
+    private val source = TokenSource(reader, logger, options)
     private val expressionParser = ExpressionParser(this.source)
     private val typeParser = TypeParser(this.source)
     private val varDeclarationParser = VariableDeclarationStatementParser(this.source, this.expressionParser, this.typeParser)
