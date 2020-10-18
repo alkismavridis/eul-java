@@ -42,35 +42,6 @@ internal class EulTokenizerTest {
     }
 
     @Test
-    fun requireNextToken_shouldReturnAllTokens() {
-        val tokenizer = this.createTokenizer("hello +==//this is a comment\nworld")
-        assertEulReference(tokenizer.requireNextToken(false), "hello", 1, 1)
-        assertSpecialCharacter(tokenizer.requireNextToken(false), SpecialCharType.PLUS_EQUALS, 1, 7)
-        assertSpecialCharacter(tokenizer.requireNextToken(false), SpecialCharType.EQUALS, 1, 9)
-        assertThat(tokenizer.requireNextToken(false)).isInstanceOf(EulCommentToken::class.java)
-        assertSpecialCharacter(tokenizer.requireNextToken(false), SpecialCharType.NEW_LINE, 1, -1)
-        assertEulReference(tokenizer.requireNextToken(false), "world", 2, 1)
-
-        assertThatExceptionOfType(TokenizerException::class.java)
-                .isThrownBy { tokenizer.requireNextToken(false) }
-                .withMessage("End of file found while parsing")
-    }
-
-    @Test
-    fun requireNextToken_shouldBeAbleToSkipNewLineTokens() {
-        val tokenizer = this.createTokenizer("hello +==//this is a comment\nworld")
-        assertEulReference(tokenizer.requireNextToken(true), "hello", 1, 1)
-        assertSpecialCharacter(tokenizer.requireNextToken(true), SpecialCharType.PLUS_EQUALS, 1, 7)
-        assertSpecialCharacter(tokenizer.requireNextToken(true), SpecialCharType.EQUALS, 1, 9)
-        assertThat(tokenizer.requireNextToken(true)).isInstanceOf(EulCommentToken::class.java)
-        assertEulReference(tokenizer.requireNextToken(true), "world", 2, 1)
-
-        assertThatExceptionOfType(TokenizerException::class.java)
-                .isThrownBy { tokenizer.requireNextToken(false) }
-                .withMessage("End of file found while parsing")
-    }
-
-    @Test
     fun getNextNonCommentToken_shouldReturnAllNonCommentTokens() {
         val tokenizer = this.createTokenizer("hello +==//this is a comment\nworld")
         assertEulReference(tokenizer.getNextNonCommentToken(false), "hello", 1, 1)
@@ -89,33 +60,6 @@ internal class EulTokenizerTest {
         assertSpecialCharacter(tokenizer.getNextNonCommentToken(true), SpecialCharType.EQUALS, 1, 9)
         assertEulReference(tokenizer.getNextNonCommentToken(true), "world", 2, 1)
         assertThat(tokenizer.getNextNonCommentToken(true)).isNull()
-    }
-
-    @Test
-    fun requireNextNonCommentToken_shouldReturnAllTokens() {
-        val tokenizer = this.createTokenizer("hello +==//this is a comment\nworld")
-        assertEulReference(tokenizer.requireNextNonCommentToken(false), "hello", 1, 1)
-        assertSpecialCharacter(tokenizer.requireNextNonCommentToken(false), SpecialCharType.PLUS_EQUALS, 1, 7)
-        assertSpecialCharacter(tokenizer.requireNextNonCommentToken(false), SpecialCharType.EQUALS, 1, 9)
-        assertSpecialCharacter(tokenizer.requireNextNonCommentToken(false), SpecialCharType.NEW_LINE, 1, -1)
-        assertEulReference(tokenizer.requireNextNonCommentToken(false), "world", 2, 1)
-
-        assertThatExceptionOfType(TokenizerException::class.java)
-                .isThrownBy { tokenizer.requireNextNonCommentToken(false) }
-                .withMessage("End of file found while parsing")
-    }
-
-    @Test
-    fun requireNextNonCommentToken_shouldBeAbleToSkipNewLineTokens() {
-        val tokenizer = this.createTokenizer("hello +==//this is a comment\nworld")
-        assertEulReference(tokenizer.requireNextNonCommentToken(true), "hello", 1, 1)
-        assertSpecialCharacter(tokenizer.requireNextNonCommentToken(true), SpecialCharType.PLUS_EQUALS, 1, 7)
-        assertSpecialCharacter(tokenizer.requireNextNonCommentToken(true), SpecialCharType.EQUALS, 1, 9)
-        assertEulReference(tokenizer.requireNextNonCommentToken(true), "world", 2, 1)
-
-        assertThatExceptionOfType(TokenizerException::class.java)
-                .isThrownBy { tokenizer.requireNextNonCommentToken(false) }
-                .withMessage("End of file found while parsing")
     }
 
 

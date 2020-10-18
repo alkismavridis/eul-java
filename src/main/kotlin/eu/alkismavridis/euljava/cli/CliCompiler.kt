@@ -6,6 +6,7 @@ import eu.alkismavridis.euljava.core.ast.statements.EulStatement
 import eu.alkismavridis.euljava.emitter.DoNothingEmitter
 import eu.alkismavridis.euljava.parser.EulStatementParser
 import eu.alkismavridis.euljava.parser.StatementLevel
+import eu.alkismavridis.euljava.parser.TokenSource
 import java.lang.Exception
 import java.lang.IllegalArgumentException
 import java.nio.file.AccessDeniedException
@@ -35,12 +36,10 @@ class CliCompiler {
     }
 
     private fun compileFile(options: CompileOptions) {
-        val statements = mutableListOf<EulStatement>()
-        while(true) {
-            val parser = this.createParser(options)
-            val nextStatement = parser.getNextStatement(StatementLevel.TOP_LEVEL) ?: break
-            statements.add(nextStatement)
-        }
+        val parser = this.createParser(options)
+        val statements = parser.getStatements(StatementLevel.TOP_LEVEL)
+        parser.assertEndOfInput()
+
         if (this.logger.hasErrors) return
 
         // Dummy area starts here...
@@ -63,6 +62,7 @@ class CliCompiler {
         }
 
         val reader = Files.newBufferedReader(path)
-        return EulStatementParser(reader, this.logger, options)
+        val tokenSource = TokenSource(reader, this.logger, options)
+        return EulStatementParser(tokenSource, this.logger, options)
     }
 }

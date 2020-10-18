@@ -9,10 +9,11 @@ import eu.alkismavridis.euljava.core.ast.keywords.KeywordToken
 import eu.alkismavridis.euljava.core.ast.keywords.KeywordType
 import eu.alkismavridis.euljava.core.ast.operators.SpecialCharacterToken
 import eu.alkismavridis.euljava.core.ast.operators.SpecialCharType
+import eu.alkismavridis.euljava.core.ast.statements.ExpressionStatement
+import eu.alkismavridis.euljava.core.ast.statements.IfStatement
 import eu.alkismavridis.euljava.core.ast.statements.ReturnStatement
 import eu.alkismavridis.euljava.core.ast.statements.VariableDeclarationStatement
 import eu.alkismavridis.euljava.core.ast.types.TypeExpression
-import eu.alkismavridis.euljava.core.types.EulType
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Offset
 
@@ -48,11 +49,11 @@ class EulAssert {
             assertThat(asRef.column).isEqualTo(column)
         }
 
-        fun assertSpecialCharacter(token: EulToken?, text: SpecialCharType, line: Int, column: Int) {
+        fun assertSpecialCharacter(token: EulToken?, type: SpecialCharType, line: Int, column: Int) {
             assertThat(token).isNotNull().isInstanceOf(SpecialCharacterToken::class.java)
 
             val asOperator = token as SpecialCharacterToken
-            assertThat(asOperator.type).isEqualTo(text)
+            assertThat(asOperator.type).isEqualTo(type)
             assertThat(asOperator.line).isEqualTo(line)
             assertThat(asOperator.column).isEqualTo(column)
         }
@@ -146,6 +147,24 @@ class EulAssert {
             assertThat(token).isNotNull().isInstanceOf(ReturnStatement::class.java)
 
             val casted = token as ReturnStatement
+            assertThat(casted.line).isEqualTo(line)
+            assertThat(casted.column).isEqualTo(column)
+            return casted
+        }
+
+        fun assertIfStatement(token: EulToken?, line: Int, column: Int) : IfStatement {
+            assertThat(token).isNotNull().isInstanceOf(IfStatement::class.java)
+
+            val casted = token as IfStatement
+            assertThat(casted.line).isEqualTo(line)
+            assertThat(casted.column).isEqualTo(column)
+            return casted
+        }
+
+        fun assertExpressionStatement(token: EulToken?, line: Int, column: Int) : ExpressionStatement {
+            assertThat(token).isNotNull().isInstanceOf(ExpressionStatement::class.java)
+
+            val casted = token as ExpressionStatement
             assertThat(casted.line).isEqualTo(line)
             assertThat(casted.column).isEqualTo(column)
             return casted

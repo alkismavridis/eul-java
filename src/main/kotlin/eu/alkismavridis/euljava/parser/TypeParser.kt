@@ -4,7 +4,7 @@ import eu.alkismavridis.euljava.core.ast.types.TypeExpression
 
 class TypeParser(private val source: TokenSource) {
     fun requireType() : TypeExpression {
-        val typeReference = this.source.requireReference("Expected type", "Expected type but end of file was found")
+        val typeReference = this.source.requireReference(true,"type")
         return TypeExpression(typeReference.name, typeReference.line, typeReference.column)
     }
 }

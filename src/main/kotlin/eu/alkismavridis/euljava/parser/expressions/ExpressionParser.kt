@@ -27,19 +27,19 @@ class ExpressionParser(private val source: TokenSource) {
      * If any opening token exists (such as parenthesis open), this method considers that it is already consumed.
      * Does NOT Consumes closing token such as ) or ], if and only if the corresponding opening token was also read during this method call.
      * */
-    fun readExpression(endPolicy: NewLinePolicy): EulExpression? {
+    fun readExpression(newLinePolicy: NewLinePolicy): EulExpression? {
         val builder = ExpressionBuilder()
-        this.addLongExpressionToBuilder(builder, endPolicy)
+        this.addLongExpressionToBuilder(builder, newLinePolicy)
         return builder.getResult()
     }
 
-    fun requireExpression(endPolicy: NewLinePolicy): EulExpression {
+    fun requireExpression(newLinePolicy: NewLinePolicy): EulExpression {
         val builder = ExpressionBuilder()
-        this.addLongExpressionToBuilder(builder, endPolicy)
+        this.addLongExpressionToBuilder(builder, newLinePolicy)
 
         val result = builder.getResult()
         if (result == null) {
-            val closingToken = this.source.getNextToken(endPolicy.ignoreFirst)
+            val closingToken = this.source.getNextToken(newLinePolicy.ignoreFirst)
             throw if (closingToken == null) ParserException.eof("Expected expression but found end of file")
             else ParserException.of(closingToken, "Expected expression")
         }
@@ -101,8 +101,8 @@ class ExpressionParser(private val source: TokenSource) {
      *
      * It handles prefix expressions and expressions starting with parenthesis-open
      * */
-    private fun readShortExpression(endPolicy: NewLinePolicy, forceSkipNewLines: Boolean, isRequired: Boolean): EulExpression? {
-        val firstToken = this.source.getNextToken(forceSkipNewLines || endPolicy.ignoreAll)
+    private fun readShortExpression(newLinePolicy: NewLinePolicy, forceSkipNewLines: Boolean, isRequired: Boolean): EulExpression? {
+        val firstToken = this.source.getNextToken(forceSkipNewLines || newLinePolicy.ignoreAll)
         if (firstToken == null) {
             if (isRequired) throw this.createExpressionExpectedError(firstToken)
             else return null
@@ -114,7 +114,7 @@ class ExpressionParser(private val source: TokenSource) {
 
         val specialCharType = firstToken.getSpecialCharType()
         if (firstToken.getSpecialCharType().isPrefix()) {
-            val expression = this.readShortExpression(endPolicy, true, true)
+            val expression = this.readShortExpression(newLinePolicy, true, true)
                     ?: throw ParserException.of(firstToken, "Expected expression but end of file war found")
             return EulPrefixExpression(firstToken as SpecialCharacterToken, expression, null)
         } else if (specialCharType == SpecialCharType.PARENTHESIS_OPEN) {
@@ -141,11 +141,11 @@ class ExpressionParser(private val source: TokenSource) {
         else ParserException.of(unexpectedToken, "Expected expression")
     }
 
-    private fun readCommaSeparatedList(endPolicy: NewLinePolicy): List<EulExpression>? {
+    private fun readCommaSeparatedList(): List<EulExpression>? {
         var result: MutableList<EulExpression>? = null
         loop@ while (true) {
             val builder = ExpressionBuilder()
-            this.addLongExpressionToBuilder(builder, endPolicy)
+            this.addLongExpressionToBuilder(builder, NewLinePolicy.IGNORE)
             val closingToken = this.source.getNextToken(false)
             val specialCharType = closingToken?.getSpecialCharType() ?: SpecialCharType.NOT_A_SPECIAL_CHARACTER
 
@@ -171,7 +171,7 @@ class ExpressionParser(private val source: TokenSource) {
     private fun integrateSuffix(tokenAfterExpression: EulToken, builder: ExpressionBuilder) {
         when (tokenAfterExpression.getSpecialCharType()) {
             SpecialCharType.PARENTHESIS_OPEN -> {
-                val parameters = this.readCommaSeparatedList(NewLinePolicy.IGNORE)
+                val parameters = this.readCommaSeparatedList()
                 builder.addSuffix(tokenAfterExpression as SpecialCharacterToken, parameters)
             }
             else -> {

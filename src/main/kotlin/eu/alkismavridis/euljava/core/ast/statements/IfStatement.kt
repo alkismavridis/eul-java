@@ -15,8 +15,8 @@ class IfStatement(
         line: Int,
         column: Int,
         val condition: EulExpression,
-        val ifStatements: List<EulStatement>,
+        val ifBlockStatements: List<EulStatement>,
         val elseIfBlocks: List<ElseIfBlock>?,
         val elseToken: EulToken?,
-        val elseStatements: List<EulStatement>?
+        val elseBlockStatements: List<EulStatement>?
 ) : EulStatement(line, column)
